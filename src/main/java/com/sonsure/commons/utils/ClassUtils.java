@@ -1,5 +1,6 @@
 package com.sonsure.commons.utils;
 
+import com.sonsure.commons.bean.BeanFieldCache;
 import com.sonsure.commons.bean.IntrospectionCache;
 import com.sonsure.commons.exception.SonsureException;
 import org.apache.commons.lang3.BooleanUtils;
@@ -7,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -69,6 +71,55 @@ public class ClassUtils {
 
         IntrospectionCache introspectionCache = IntrospectionCache.forClass(beanClass);
         return introspectionCache.getPropertyDescriptor(propertyName);
+    }
+
+
+    /**
+     * 返回JavaBean的所有field
+     *
+     * @param beanClass the bean class
+     * @return the fields
+     */
+    public static Field[] getSelfFields(Class<?> beanClass) {
+
+        return getBeanFields(beanClass, beanClass.getSuperclass());
+    }
+
+    /**
+     * 返回JavaBean的所有field
+     *
+     * @param beanClass the bean class
+     * @return the fields
+     */
+    public static Field[] getBeanFields(Class<?> beanClass) {
+
+        return getBeanFields(beanClass, null);
+    }
+
+
+    /**
+     * 返回JavaBean的所有field
+     *
+     * @param beanClass the bean class
+     * @param stopClass the stop class
+     * @return the fields
+     */
+    public static Field[] getBeanFields(Class<?> beanClass, Class<?> stopClass) {
+        BeanFieldCache beanFieldCache = BeanFieldCache.forClass(beanClass, stopClass);
+        return beanFieldCache.getBeanFields();
+    }
+
+    /**
+     * 返回JavaBean给定名称的field
+     *
+     * @param beanClass the bean class
+     * @param fieldName the name
+     * @return the field, or <code>null</code> if none
+     */
+    public static Field getBeanField(Class<?> beanClass, String fieldName) {
+
+        BeanFieldCache beanFieldCache = BeanFieldCache.forClass(beanClass);
+        return beanFieldCache.getBeanField(fieldName);
     }
 
 

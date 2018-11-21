@@ -13,6 +13,15 @@ public class Page<T> {
 
     private Pagination pagination;
 
+    public Page() {
+
+    }
+
+    public Page(List<T> list, Pagination pagination) {
+        this.list = list;
+        this.pagination = pagination;
+    }
+
     public List<T> getList() {
         return list;
     }

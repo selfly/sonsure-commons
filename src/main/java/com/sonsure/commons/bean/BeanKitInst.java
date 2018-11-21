@@ -33,34 +33,14 @@ public class BeanKitInst {
             return;
         }
 
-        Map<String, Field> origFieldMap = new HashMap<>();
-        List<Field> origFieldList = new ArrayList<>();
-        Class<?> tempOrigClass = orig.getClass();
-        while (tempOrigClass != null) {
-            //当父类为null的时候说明到达了最上层的父类(Object类).
-            origFieldList.addAll(Arrays.asList(tempOrigClass.getDeclaredFields()));
-            tempOrigClass = tempOrigClass.getSuperclass();
-        }
-        for (Field origField : origFieldList) {
-            origFieldMap.put(origField.getName(), origField);
-        }
+        Field[] destBeanFields = ClassUtils.getBeanFields(dest.getClass());
 
-
-        List<Field> destFieldList = new ArrayList<Field>();
-        Class<?> tempDestClass = dest.getClass();
-        while (tempDestClass != null) {
-            destFieldList.addAll(Arrays.asList(tempDestClass.getDeclaredFields()));
-            tempDestClass = tempDestClass.getSuperclass();
-        }
-
-        for (Field destField : destFieldList) {
+        for (Field destField : destBeanFields) {
             try {
-
                 if (Modifier.isFinal(destField.getModifiers())) {
                     continue;
                 }
-
-                Field origField = origFieldMap.get(destField.getName());
+                Field origField = ClassUtils.getBeanField(orig.getClass(), destField.getName());
                 if (origField == null) {
                     continue;
                 }
@@ -72,7 +52,6 @@ public class BeanKitInst {
                 throw new SonsureBeanException("Field拷贝失败:" + destField.getName(), e);
             }
         }
-
     }
 
     /**
