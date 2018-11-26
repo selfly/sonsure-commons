@@ -67,7 +67,7 @@ public class BeanFieldCache {
             map = new HashMap<>();
             classCache.put(beanClass, map);
         }
-        Class<?> stopCls = stopClass == null ? Object.class : stopClass;
+        Class<?> stopCls = stopClass == null ? beanClass : stopClass;
         Object value = map.get(stopCls);
         if (value instanceof Reference) {
             @SuppressWarnings("rawtypes")
