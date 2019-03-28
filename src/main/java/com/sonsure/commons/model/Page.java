@@ -17,6 +17,10 @@ public class Page<T> {
 
     }
 
+    public Page(Pagination pagination) {
+        this(null, pagination);
+    }
+
     public Page(List<T> list, Pagination pagination) {
         this.list = list;
         this.pagination = pagination;

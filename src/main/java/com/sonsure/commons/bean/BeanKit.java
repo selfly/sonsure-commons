@@ -1,5 +1,7 @@
 package com.sonsure.commons.bean;
 
+import com.sonsure.commons.model.Page;
+
 import java.util.List;
 import java.util.Map;
 
@@ -98,7 +100,7 @@ public class BeanKit {
      *
      * @param map       the map
      * @param beanClass the bean class
-     * @param delimiter the delimiter
+     * @param delimiter the delimiter¡¡¡¡¡
      * @return t
      */
     public static <T> T mapToBean(Map<String, Object> map, Class<T> beanClass, Character delimiter) {
@@ -114,6 +116,28 @@ public class BeanKit {
      */
     public static <T> List<T> copyProperties(Class<T> clazz, List<?> list) {
         return INSTANCE.copyProperties(clazz, list);
+    }
+
+    /**
+     * bean转换成map
+     *
+     * @param obj
+     * @return
+     */
+    public static Map<String, Object> beanToMap(Object obj) {
+        return INSTANCE.beanToMap(obj);
+    }
+
+    /**
+     * 拷贝分页对象
+     *
+     * @param clazz
+     * @param page
+     * @param <T>
+     * @return
+     */
+    public static <T> Page<T> copyPage(Class<T> clazz, Page<?> page) {
+        return INSTANCE.copyPage(clazz, page);
     }
 
     /**

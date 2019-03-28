@@ -55,16 +55,6 @@ public class RunBinderInterceptor {
     @Around("serviceAnnotation() || serviceName() || aspectRunBinder()")
     public Object around(ProceedingJoinPoint pjp) {
 
-        Class<?> targetClass = pjp.getTarget().getClass();
-        IgnoreRunBinder ignoreRunBinder = targetClass.getAnnotation(IgnoreRunBinder.class);
-        if (ignoreRunBinder != null) {
-            try {
-                return pjp.proceed();
-            } catch (Throwable throwable) {
-                throw new RuntimeException(throwable);
-            }
-        }
-
         AtomicInteger ai = methodHierarchy.get();
         if (ai == null) {
             ai = new AtomicInteger(1);
@@ -72,70 +62,32 @@ public class RunBinderInterceptor {
         } else {
             ai.incrementAndGet();
         }
-
-        //被拦截的类
-        String targetClassName = targetClass.getName();
-
-        //被拦截方法
-        Signature signature = pjp.getSignature();
-        String targetMethod = signature.getName();
-
-        //当前时间毫秒数
-        long beginTime = System.currentTimeMillis();
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("start:[class={},method={},beginTime={}]", new Object[]{targetClassName, targetMethod, beginTime});
-        }
-
         //返回结果
         Object result = null;
         try {
             //此处调用业务方法
             result = pjp.proceed();
 
-        } catch (SonsureException ktanxException) {
+        } catch (SonsureException bizException) {
             if (ai.get() > 1) {
-                throw ktanxException;
+                throw bizException;
             }
             RunBinderTransactionAspectSupport.setRollbackOnly();
-            RunBinder.addError(ktanxException);
-            result = this.getDefaultValue(signature);
-            LOG.warn(String.format("已知异常,方法:[class=%s,method=%s],信息:[resultCode=%s,resultMsg=%s],参数:[%s]", targetClassName,
-                    targetMethod, ktanxException.getResultCode(), ktanxException.getResultMsg(), argsToString(pjp)),
-                    ktanxException);
-            //ignore
+            RunBinder.addError(bizException);
+            //log....
         } catch (Throwable throwable) {
             if (ai.get() > 1) {
                 throw new RuntimeException(throwable);
             }
             RunBinderTransactionAspectSupport.setRollbackOnly();
             RunBinder.addError("UN_KNOWN_EXCEPTION", "未知异常");
-            result = this.getDefaultValue(signature);
-            LOG.error(
-                    String.format("未知异常,方法:[class=%s,method=%s],信息:[resultCode=%s],参数:[%s]", targetClassName, targetMethod, "UN_KNOWN_EXCEPTION", argsToString(pjp)),
-                    throwable);
-            //ignore
+            //log....
         } finally {
             if (ai.decrementAndGet() == 0) {
                 methodHierarchy.remove();
             }
         }
-
-        long endTime = System.currentTimeMillis();
-
-        long useTime = endTime - beginTime;
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("end:[class={},method={},endTime={},usedTime={}]", new Object[]{targetClassName, targetMethod,
-                    endTime, useTime});
-        }
-
-        if (useTime > LOG_TIMEOUT) {
-            LOG.warn("Long processing time:[class={},method={},usedTime={}]", new Object[]{targetClassName, targetMethod,
-                    useTime});
-        }
         return result;
-
     }
 
     /**

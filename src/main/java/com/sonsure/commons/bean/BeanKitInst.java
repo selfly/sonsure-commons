@@ -2,6 +2,7 @@ package com.sonsure.commons.bean;
 
 import com.sonsure.commons.exception.SonsureBeanException;
 import com.sonsure.commons.model.Model;
+import com.sonsure.commons.model.Page;
 import com.sonsure.commons.utils.ClassUtils;
 import com.sonsure.commons.utils.NameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -104,6 +105,34 @@ public class BeanKitInst {
     }
 
     /**
+     * bean转换成map
+     *
+     * @param obj
+     * @return
+     */
+    public Map<String, Object> beanToMap(Object obj) {
+        if (obj == null) {
+            return Collections.EMPTY_MAP;
+        }
+        Map<String, Object> map = new HashMap<>();
+        PropertyDescriptor[] propertyDescriptors = ClassUtils.getPropertyDescriptors(obj.getClass());
+        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+
+            if (propertyDescriptor.getReadMethod() == null) {
+                continue;
+            }
+
+            Method readMethod = propertyDescriptor.getReadMethod();
+            Object value = ClassUtils.invokeMethod(readMethod, obj);
+            if (value == null) {
+                continue;
+            }
+            map.put(propertyDescriptor.getName(), value);
+        }
+        return map;
+    }
+
+    /**
      * map转为bean
      *
      * @param map       the map
@@ -171,6 +200,13 @@ public class BeanKitInst {
             }
         }
         return bean;
+    }
+
+    public <T> Page<T> copyPage(Class<T> clazz, Page<?> page) {
+        Page<T> resultPage = new Page<>(page.getPagination());
+        List<T> list = this.copyProperties(clazz, page.getList());
+        resultPage.setList(list);
+        return resultPage;
     }
 
     /**
@@ -346,8 +382,9 @@ public class BeanKitInst {
      *
      * @param converter the converter
      */
-    public void registerConverter(TypeConverter converter) {
+    public BeanKitInst registerConverter(TypeConverter converter) {
         this.typeConverters.add(converter);
+        return this;
     }
 
     /**
@@ -356,7 +393,7 @@ public class BeanKitInst {
      * @param sourceClass the source class
      * @param targetClass the target class
      */
-    public void unregisterConverter(Class<?> sourceClass, Class<?> targetClass) {
+    public BeanKitInst unregisterConverter(Class<?> sourceClass, Class<?> targetClass) {
         Iterator<TypeConverter> iterator = this.typeConverters.iterator();
         while (iterator.hasNext()) {
             TypeConverter typeConverter = iterator.next();
@@ -364,13 +401,15 @@ public class BeanKitInst {
                 iterator.remove();
             }
         }
+        return this;
     }
 
     /**
      * 清空注册的转换器
      */
-    public void clearConverter() {
+    public BeanKitInst clearConverter() {
         this.typeConverters.clear();
+        return this;
     }
 
     /**

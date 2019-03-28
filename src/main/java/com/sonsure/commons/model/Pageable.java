@@ -18,6 +18,12 @@ public class Pageable implements Serializable {
     private static final long serialVersionUID = 4060766214127186912L;
 
     /**
+     * 供某些情况下分页查询快速设置的值，代码中应避免setPageSize(Integer.MAX_VALUE)
+     */
+    public static final int NON_PAGE_CAREFUL_SIZE = 100;
+    public static final int NON_PAGE_CASUAL_SIZE = 500;
+
+    /**
      * 每页显示条数
      */
     private int pageSize = 20;
