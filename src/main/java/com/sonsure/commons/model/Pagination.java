@@ -1,6 +1,8 @@
 package com.sonsure.commons.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 分页器。
@@ -288,6 +290,20 @@ public class Pagination implements Serializable, Cloneable {
      */
     public int[] getSlider() {
         return getSlider(DEFAULT_SLIDER_SIZE);
+    }
+
+    /**
+     * 兼容某些特殊情况只能用list
+     * 例如handlebars前端 默认int[]转成Object[]会出错
+     * @return
+     */
+    public List<Integer> getSliderList() {
+        int[] slider = this.getSlider();
+        List<Integer> list = new ArrayList<>(slider.length);
+        for (int i : slider) {
+            list.add(i);
+        }
+        return list;
     }
 
     /**

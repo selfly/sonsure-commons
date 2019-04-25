@@ -9,7 +9,7 @@
     <version>2.0.0</version>
 
     <name>sonsure-commons</name>
-    <description>Sonsure commons is a java development kit.</description>
+    <description>Sonsure commons</description>
     <url>https://www.sonsure.com/</url>
     <licenses>
         <license>
@@ -24,12 +24,14 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:git@github.com:selfly/ktanx-common.git</connection>
-        <developerConnection>scm:git:git@github.com:selfly/ktanx-common.git</developerConnection>
-        <url>https://github.com/selfly/ktanx-common</url>
+        <connection>https://github.com/selfly/sonsure-commons</connection>
+        <developerConnection>https://github.com/selfly/sonsure-commons</developerConnection>
+        <url>https://github.com/selfly/sonsure-commons</url>
     </scm>
 
     <properties>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
         <slf4j-api.version>1.7.25</slf4j-api.version>
         <commons-lang3.version>3.7</commons-lang3.version>
         <aspectjweaver.version>1.8.13</aspectjweaver.version>
@@ -89,19 +91,6 @@
 
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
     <profiles>
         <profile>
             <id>release</id>
@@ -132,6 +121,9 @@
                                 <goals>
                                     <goal>jar</goal>
                                 </goals>
+                                <configuration>
+                                    <additionalparam>-Xdoclint:none</additionalparam>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

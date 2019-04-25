@@ -50,13 +50,20 @@ public final class EnumUtils {
      */
     @SuppressWarnings("unchecked")
     public static <T> T getEnum(Class<T> clazz, String code) {
-        if (!IEnum.class.isAssignableFrom(clazz)) {
-            return null;
-        }
-        IEnum[] enumConstants = (IEnum[]) clazz.getEnumConstants();
-        for (IEnum enumConstant : enumConstants) {
-            if (enumConstant.getCode().equalsIgnoreCase(code)) {
-                return (T) enumConstant;
+
+        T[] enumConstants = clazz.getEnumConstants();
+        if (IEnum.class.isAssignableFrom(clazz)) {
+            IEnum[] iEnums = (IEnum[]) enumConstants;
+            for (IEnum ienum : iEnums) {
+                if (ienum.getCode().equalsIgnoreCase(code)) {
+                    return (T) ienum;
+                }
+            }
+        } else {
+            for (T enumConstant : enumConstants) {
+                if (((Enum) enumConstant).name().equals(code)) {
+                    return enumConstant;
+                }
             }
         }
         return null;
