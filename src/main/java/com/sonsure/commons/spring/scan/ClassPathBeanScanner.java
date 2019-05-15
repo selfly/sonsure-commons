@@ -21,7 +21,7 @@ public class ClassPathBeanScanner {
 
     public static final String PACKAGE_SEPARATOR = ".";
 
-    protected static final ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+    protected static final ResourcePatternResolver RESOURCE_PATTERN_RESOLVER = new PathMatchingResourcePatternResolver();
 
     /**
      * 扫描包下的所有class
@@ -30,13 +30,33 @@ public class ClassPathBeanScanner {
      * @return
      */
     public static List<String> scanClasses(String basePackage) {
+        return scanClasses(basePackage, RESOURCE_PATTERN_RESOLVER);
+    }
+
+    /**
+     * 扫描包下的所有class
+     *
+     * @param basePackage
+     * @return
+     */
+    public static List<String> scanClasses(String basePackage, ClassLoader classLoader) {
+        return scanClasses(basePackage, new PathMatchingResourcePatternResolver(classLoader));
+    }
+
+    /**
+     * 扫描包下的所有class
+     *
+     * @param basePackage
+     * @return
+     */
+    public static List<String> scanClasses(String basePackage, ResourcePatternResolver RESOURCE_PATTERN_RESOLVER) {
 
         String basePackagePath = StringUtils.replace(basePackage, PACKAGE_SEPARATOR, PATH_SEPARATOR);
         String packageSearchPath = CLASSPATH_ALL_URL_PREFIX + basePackagePath + '/' + DEFAULT_RESOURCE_PATTERN;
 
         List<String> classes = new ArrayList<>();
         try {
-            Resource[] resources = resourcePatternResolver.getResources(packageSearchPath);
+            Resource[] resources = RESOURCE_PATTERN_RESOLVER.getResources(packageSearchPath);
             for (Resource resource : resources) {
                 ClassReader classReader = new ClassReader(IOUtils.toByteArray(resource.getInputStream()));
                 String className = StringUtils.replace(classReader.getClassName(), PATH_SEPARATOR, PACKAGE_SEPARATOR);
@@ -47,5 +67,6 @@ public class ClassPathBeanScanner {
         }
         return classes;
     }
+
 
 }
