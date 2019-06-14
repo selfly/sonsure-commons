@@ -12,7 +12,7 @@ public class IEnumStringConverter implements TypeConverter {
 
 
     @Override
-    public boolean isSupport(Class<?> sourceClass, Class<?> targetClass) {
+    public boolean isSupport(Class<?> sourceClass, Class<?> targetClass, String fieldName) {
         if (IEnum.class.isAssignableFrom(sourceClass) && targetClass == String.class) {
             return true;
         }

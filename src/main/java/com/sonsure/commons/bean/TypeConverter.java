@@ -15,9 +15,10 @@ public interface TypeConverter {
      *
      * @param sourceClass the source class
      * @param targetClass the target class
-     * @return boolean
+     * @param fieldName   the field name
+     * @return boolean boolean
      */
-    boolean isSupport(Class<?> sourceClass, Class<?> targetClass);
+    boolean isSupport(Class<?> sourceClass, Class<?> targetClass, String fieldName);
 
     /**
      * 转换操作

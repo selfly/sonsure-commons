@@ -17,7 +17,7 @@ public class NumberConverter implements TypeConverter {
 
 
     @Override
-    public boolean isSupport(Class<?> sourceClass, Class<?> targetClass) {
+    public boolean isSupport(Class<?> sourceClass, Class<?> targetClass, String fieldName) {
         if (supportClasses.contains(sourceClass) && supportClasses.contains(targetClass)) {
             return true;
         }

@@ -194,7 +194,7 @@ public class BeanKitInst {
                 }
             } else {
 
-                value = typeConvert(value.getClass(), targetPd.getPropertyType(), value);
+                value = typeConvert(value.getClass(), targetPd.getPropertyType(), name, value);
 
                 ClassUtils.invokeMethod(writeMethod, bean, value);
             }
@@ -324,7 +324,7 @@ public class BeanKitInst {
                 Method writeMethod = targetPd.getWriteMethod();
 
                 //自定义转换
-                value = typeConvert(sourcePd.getPropertyType(), targetPd.getPropertyType(), value);
+                value = typeConvert(sourcePd.getPropertyType(), targetPd.getPropertyType(), targetPd.getName(), value);
                 ClassUtils.invokeMethod(writeMethod, target, value);
             }
         }
@@ -363,14 +363,14 @@ public class BeanKitInst {
      * @param value              the value
      * @return the object
      */
-    private Object typeConvert(Class<?> sourcePropertyType, Class<?> targetPropertyType, Object value) {
+    private Object typeConvert(Class<?> sourcePropertyType, Class<?> targetPropertyType, String fileName, Object value) {
 
         if (value == null || sourcePropertyType == targetPropertyType || (this.typeConverters == null || this.typeConverters.isEmpty())) {
             return value;
         }
 
         for (TypeConverter typeConverter : this.typeConverters) {
-            if (typeConverter.isSupport(sourcePropertyType, targetPropertyType)) {
+            if (typeConverter.isSupport(sourcePropertyType, targetPropertyType, fileName)) {
                 return typeConverter.convert(sourcePropertyType, targetPropertyType, value);
             }
         }
@@ -390,17 +390,11 @@ public class BeanKitInst {
     /**
      * 移除注册的转换器
      *
-     * @param sourceClass the source class
-     * @param targetClass the target class
+     * @param converter the converter
+     * @return the bean kit inst
      */
-    public BeanKitInst unregisterConverter(Class<?> sourceClass, Class<?> targetClass) {
-        Iterator<TypeConverter> iterator = this.typeConverters.iterator();
-        while (iterator.hasNext()) {
-            TypeConverter typeConverter = iterator.next();
-            if (typeConverter.isSupport(sourceClass, targetClass)) {
-                iterator.remove();
-            }
-        }
+    public BeanKitInst unregisterConverter(TypeConverter converter) {
+        this.typeConverters.remove(converter);
         return this;
     }
 
