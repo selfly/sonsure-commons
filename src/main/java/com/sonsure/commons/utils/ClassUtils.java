@@ -96,6 +96,22 @@ public class ClassUtils {
         return getBeanFields(beanClass, null);
     }
 
+    /**
+     * 返回JavaBean的所有field
+     *
+     * @param beanClass the bean class
+     * @return the fields
+     */
+    public static Map<String, Field> getBeanFieldMap(Class<?> beanClass) {
+
+        Field[] beanFields = getBeanFields(beanClass, null);
+        Map<String, Field> fieldMap = new HashMap<>();
+        for (Field beanField : beanFields) {
+            fieldMap.put(beanField.getName(), beanField);
+        }
+        return fieldMap;
+    }
+
 
     /**
      * 返回JavaBean的所有field

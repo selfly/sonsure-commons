@@ -53,7 +53,7 @@ public class XmlNode {
     }
 
     /**
-     * 获取子节点
+     * 根据节点名称获取唯一子节点
      *
      * @param nodeName
      * @return
@@ -61,6 +61,23 @@ public class XmlNode {
     public XmlNode getSingleChildNode(String nodeName) {
         for (XmlNode childNode : this.childNodes) {
             if (StringUtils.equals(nodeName, childNode.getName())) {
+                return childNode;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 根据节点名称+某个属性，获取子节点
+     *
+     * @param nodeName the node name
+     * @param attrName the attr name
+     * @param attrVal  the attr val
+     * @return single child node
+     */
+    public XmlNode getSingleChildNode(String nodeName, String attrName, String attrVal) {
+        for (XmlNode childNode : this.childNodes) {
+            if (StringUtils.equals(nodeName, childNode.getName()) && StringUtils.equals(childNode.getAttribute(attrName), attrVal)) {
                 return childNode;
             }
         }
@@ -85,7 +102,7 @@ public class XmlNode {
     }
 
     /**
-     * 获取子节点内容
+     * 根据节点名称,获取子节点内容
      *
      * @param nodeName
      * @return
@@ -93,6 +110,43 @@ public class XmlNode {
     public String getSingleChildNodeText(String nodeName) {
         XmlNode childNode = getSingleChildNode(nodeName);
         return childNode == null ? "" : childNode.getText();
+    }
+
+    /**
+     * 根据节点名称+某个属性,获取子节点内容
+     *
+     * @param nodeName the node name
+     * @param attrName the attr name
+     * @param attrVal  the attr val
+     * @return single child node text
+     */
+    public String getSingleChildNodeText(String nodeName, String attrName, String attrVal) {
+        XmlNode childNode = getSingleChildNode(nodeName, attrName, attrVal);
+        return childNode == null ? "" : childNode.getText();
+    }
+
+    /**
+     * 根据节点名称,获取子节点value属性值
+     *
+     * @param nodeName
+     * @return
+     */
+    public String getSingleChildNodeValue(String nodeName) {
+        XmlNode childNode = getSingleChildNode(nodeName);
+        return childNode == null ? "" : childNode.getAttribute("value");
+    }
+
+    /**
+     * 根据节点名称+某个属性,获取子节点value属性值
+     *
+     * @param nodeName the node name
+     * @param attrName the attr name
+     * @param attrVal  the attr val
+     * @return single child node text
+     */
+    public String getSingleChildNodeValue(String nodeName, String attrName, String attrVal) {
+        XmlNode childNode = getSingleChildNode(nodeName, attrName, attrVal);
+        return childNode == null ? "" : childNode.getAttribute("value");
     }
 
     /**
