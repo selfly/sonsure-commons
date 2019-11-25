@@ -23,6 +23,14 @@ public final class Verifier {
         validatorElements = new ArrayList<ValidatorElement>();
     }
 
+    public static void assertNotNull(Object obj, String message) {
+        Verifier.init().notNull(obj, "").errorMsg(message).validate();
+    }
+
+    public static void assertNotBlank(String str, String message) {
+        Verifier.init().notBlank(str, "").errorMsg(message).validate();
+    }
+
     public static Verifier init() {
         return new Verifier();
     }
