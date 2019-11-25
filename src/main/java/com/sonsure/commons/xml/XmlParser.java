@@ -66,7 +66,9 @@ public final class XmlParser {
         String xml = xmlContent;
         if (properties != null) {
             for (Map.Entry<String, String> entry : properties.entrySet()) {
-                xml = StringUtils.replace(xml, String.format("${%s}", entry.getKey()), entry.getValue());
+                String value = StringUtils.replace(entry.getValue(), "&amp", "&");
+                value = StringUtils.replace(value, "&", "&amp;");
+                xml = StringUtils.replace(xml, String.format("${%s}", entry.getKey()), value);
             }
         }
         Document document = readXml(xml);
@@ -146,7 +148,9 @@ public final class XmlParser {
             }
             String xml = document.asXML();
             for (Map.Entry<String, String> entry : properties.entrySet()) {
-                xml = StringUtils.replace(xml, String.format("${%s}", entry.getKey()), entry.getValue());
+                String value = StringUtils.replace(entry.getValue(), "&amp", "&");
+                value = StringUtils.replace(value, "&", "&amp;");
+                xml = StringUtils.replace(xml, String.format("${%s}", entry.getKey()), value);
             }
             return readXml(xml);
         } catch (Exception e) {
