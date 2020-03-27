@@ -12,9 +12,8 @@ import java.util.*;
 /**
  * 属性文件操作辅助类
  * <p/>
- * User: liyd
- * Date: 14-1-7
- * Time: 上午11:24
+ *
+ * @author liyd
  */
 public final class PropertyUtils {
 

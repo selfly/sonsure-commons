@@ -62,6 +62,30 @@ public class EncryptUtils {
      */
     public static String getMD5(String str, String salt, int hashIterations) {
 
+        return getMD5(str.getBytes(), salt, hashIterations);
+    }
+
+    /**
+     * 计算内容md5值,可以是文件内容byte
+     *
+     * @param bytes 计算md5值内容
+     * @return md5
+     */
+    public static String getMD5(byte[] bytes) {
+        return getMD5(bytes, null, 1);
+    }
+
+    /**
+     * 计算内容md5值
+     * 可以是字符串byte，也可以是文件byte
+     *
+     * @param bytes
+     * @param salt           盐
+     * @param hashIterations 散列次数
+     * @return md5
+     */
+    public static String getMD5(byte[] bytes, String salt, int hashIterations) {
+
         try {
 
             // 生成一个MD5加密计算摘要
@@ -73,7 +97,7 @@ public class EncryptUtils {
             // 计算md5函数
 //            md.update(str.getBytes());
 
-            byte[] hashed = md.digest(str.getBytes());
+            byte[] hashed = md.digest(bytes);
 
             for (int i = 0; i < hashIterations - 1; i++) {
                 md.reset();

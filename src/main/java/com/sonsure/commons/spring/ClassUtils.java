@@ -16,8 +16,6 @@
 
 package com.sonsure.commons.spring;
 
-import org.springframework.util.CollectionUtils;
-
 import java.beans.Introspector;
 import java.lang.reflect.*;
 import java.util.*;
@@ -1041,7 +1039,7 @@ public abstract class ClassUtils {
      * @see AbstractCollection#toString()
      */
     public static String classNamesToString(Collection<Class> classes) {
-        if (CollectionUtils.isEmpty(classes)) {
+        if (classes == null || classes.isEmpty()) {
             return "[]";
         }
         StringBuilder sb = new StringBuilder("[");

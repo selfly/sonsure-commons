@@ -29,6 +29,7 @@ public class StringValidator implements Validator {
         this.type = type;
     }
 
+    @Override
     public boolean validate(Object value) {
 
         if (type == NOT_BLANK) {
@@ -58,6 +59,7 @@ public class StringValidator implements Validator {
         }
     }
 
+    @Override
     public String validateCode() {
         if (type == NOT_BLANK) {
             return "not.blank";
@@ -78,6 +80,7 @@ public class StringValidator implements Validator {
         }
     }
 
+    @Override
     public String validateMsg(Object value, String validateName) {
         if (type == NOT_BLANK) {
             return validateName + "不能为空";

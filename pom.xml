@@ -6,9 +6,11 @@
 
     <groupId>com.sonsure</groupId>
     <artifactId>sonsure-commons</artifactId>
-    <version>2.0.1</version>
+    <version>3.0.0</version>
+    <packaging>bundle</packaging>
 
     <name>sonsure-commons</name>
+
     <description>Sonsure commons</description>
     <url>https://www.sonsure.com/</url>
     <licenses>
@@ -30,16 +32,20 @@
     </scm>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.target>1.7</maven.compiler.target>
         <maven.compiler.source>1.7</maven.compiler.source>
         <slf4j-api.version>1.7.25</slf4j-api.version>
         <commons-lang3.version>3.7</commons-lang3.version>
-        <aspectjweaver.version>1.8.13</aspectjweaver.version>
         <spring.version>4.2.4.RELEASE</spring.version>
         <servlet-api.version>2.5</servlet-api.version>
         <commons-io.version>2.6</commons-io.version>
         <dom4j.version>1.6.1</dom4j.version>
         <snakeyaml.version>1.24</snakeyaml.version>
+
+        <aetherVersion>1.1.0</aetherVersion>
+        <mavenVersion>3.3.9</mavenVersion>
     </properties>
 
     <dependencies>
@@ -54,46 +60,10 @@
             <version>${commons-lang3.version}</version>
         </dependency>
         <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>${commons-io.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-            <version>${dom4j.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-            <version>${aspectjweaver.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>${snakeyaml.version}</version>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-            <version>${spring.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>${servlet-api.version}</version>
-            <scope>provided</scope>
         </dependency>
 
     </dependencies>
@@ -103,21 +73,20 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>bundle-manifest</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <version>4.2.0</version>
+                <extensions>true</extensions>
                 <configuration>
-                    <supportedProjectTypes>
-                        <supportedProjectType>jar</supportedProjectType>
-                    </supportedProjectTypes>
                     <instructions>
-                        <!-- ...etc... -->
+                        <Bundle-ClassPath>.,{maven-dependencies}</Bundle-ClassPath>
+                        <Bundle-Vendor>Sonsure</Bundle-Vendor>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>Sonsure工具包</Bundle-Name>
+                        <Import-Package>
+                            org.apache.commons.lang3,
+                            org.slf4j,
+                            org.yaml.snakeyaml;resolution:=optional
+                        </Import-Package>
+                        <Bundle-Activator></Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>

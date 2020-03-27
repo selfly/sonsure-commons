@@ -44,7 +44,7 @@ public class BundlePathMatchingResourcePatternResolver extends PathMatchingResou
                 String connectionClsName = "org.apache.felix.framework.URLHandlersBundleURLConnection";
                 if (connectionClsName.equals(urlConnection.getClass().getName())) {
                     Class<?> aClass = urlConnection.getClass().getClassLoader().loadClass(connectionClsName);
-                    Method method = aClass.getDeclaredMethod("getLocalURL", null);
+                    Method method = aClass.getDeclaredMethod("getLocalURL", new Class<?>[]{});
                     method.setAccessible(true);
                     Object invoke = method.invoke(urlConnection);
                     url = ((URL) invoke);

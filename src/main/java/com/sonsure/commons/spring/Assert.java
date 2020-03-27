@@ -16,8 +16,6 @@
 
 package com.sonsure.commons.spring;
 
-import org.springframework.util.CollectionUtils;
-
 import java.util.Collection;
 import java.util.Map;
 
@@ -282,8 +280,8 @@ public abstract class Assert {
      * @param message    the exception message to use if the assertion fails
      * @throws IllegalArgumentException if the collection is {@code null} or has no elements
      */
-	public static void notEmpty(Collection collection, String message) {
-        if (CollectionUtils.isEmpty(collection)) {
+    public static void notEmpty(Collection collection, String message) {
+        if (collection == null || collection.isEmpty()) {
             throw new IllegalArgumentException(message);
         }
     }

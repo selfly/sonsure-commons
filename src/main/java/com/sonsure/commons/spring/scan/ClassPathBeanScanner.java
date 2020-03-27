@@ -5,13 +5,17 @@ import com.sonsure.commons.spring.BundlePathMatchingResourcePatternResolver;
 import com.sonsure.commons.spring.PathMatchingResourcePatternResolver;
 import com.sonsure.commons.spring.Resource;
 import com.sonsure.commons.spring.ResourcePatternResolver;
-import org.apache.commons.io.IOUtils;
+import com.sonsure.commons.utils.FileIOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author liyd
+ */
 public class ClassPathBeanScanner {
 
     public static final String CLASSPATH_ALL_URL_PREFIX = "classpath*:";
@@ -59,15 +63,16 @@ public class ClassPathBeanScanner {
         try {
             Resource[] resources = resourcePatternResolver.getResources(packageSearchPath);
             for (Resource resource : resources) {
-                ClassReader classReader = new ClassReader(IOUtils.toByteArray(resource.getInputStream()));
-                String className = StringUtils.replace(classReader.getClassName(), PATH_SEPARATOR, PACKAGE_SEPARATOR);
-                classes.add(className);
+                try (InputStream is = resource.getInputStream()) {
+                    ClassReader classReader = new ClassReader(FileIOUtils.toByteArray(is));
+                    String className = StringUtils.replace(classReader.getClassName(), PATH_SEPARATOR, PACKAGE_SEPARATOR);
+                    classes.add(className);
+                }
             }
         } catch (IOException e) {
             throw new SonsureException("扫描class失败,package:" + basePackage, e);
         }
         return classes;
     }
-
 
 }
