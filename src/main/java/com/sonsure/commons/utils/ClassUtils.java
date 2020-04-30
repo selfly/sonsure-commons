@@ -27,9 +27,9 @@ import java.util.Map;
 /**
  * 类辅助
  * <p/>
- * User: liyd
- * Date: 2/12/14
- * Time: 10:08 PM
+ *
+ * @author liyd
+ * @date : 2/12/14
  */
 public class ClassUtils {
 
@@ -147,98 +147,6 @@ public class ClassUtils {
         BeanFieldCache beanFieldCache = BeanFieldCache.forClass(beanClass);
         return beanFieldCache.getBeanField(fieldName);
     }
-
-
-//    /**
-//     * Map keyed by class containing CachedIntrospectionResults.
-//     * Needs to be a WeakHashMap with WeakReferences as values to allow
-//     * for proper garbage collection in case of multiple class loaders.
-//     */
-//    private static final Map<Class<?>, BeanInfo> CLASS_CACHE = Collections
-//            .synchronizedMap(new WeakHashMap<Class<?>, BeanInfo>());
-
-//    /**
-//     * 获取类本身的BeanInfo，不包含父类属性
-//     *
-//     * @param clazz
-//     * @return
-//     */
-//    public static BeanInfo getBeanInfo(Class<?> clazz, Class<?> stopClazz) {
-//        try {
-//            BeanInfo beanInfo;
-//            if (CLASS_CACHE.get(clazz) == null) {
-//                beanInfo = Introspector.getBeanInfo(clazz, stopClazz);
-//                CLASS_CACHE.put(clazz, beanInfo);
-//                // Immediately remove class from Introspector cache, to allow for proper
-//                // garbage collection on class loader shutdown - we cache it here anyway,
-//                // in a GC-friendly manner. In contrast to CachedIntrospectionResults,
-//                // Introspector does not use WeakReferences as values of its WeakHashMap!
-//                Class<?> classToFlush = clazz;
-//                do {
-//                    Introspector.flushFromCaches(classToFlush);
-//                    classToFlush = classToFlush.getSuperclass();
-//                } while (classToFlush != null);
-//            } else {
-//                beanInfo = CLASS_CACHE.get(clazz);
-//            }
-//            return beanInfo;
-//        } catch (IntrospectionException e) {
-//            throw new SonsureException("获取BeanInfo失败", e);
-//        }
-//    }
-
-//    /**
-//     * 获取类的BeanInfo,包含父类属性
-//     *
-//     * @param clazz
-//     * @return
-//     */
-//    public static BeanInfo getBeanInfo(Class<?> clazz) {
-//
-//        return getBeanInfo(clazz, Object.class);
-//    }
-//
-//    /**
-//     * 获取类本身的BeanInfo，不包含父类属性
-//     *
-//     * @param clazz
-//     * @return
-//     */
-//    public static BeanInfo getSelfBeanInfo(Class<?> clazz) {
-//
-//        return getBeanInfo(clazz, clazz.getSuperclass());
-//    }
-
-//    /**
-//     * 获取类属性的PropertyDescriptors
-//     *
-//     * @param clazz
-//     * @return
-//     */
-//    public static PropertyDescriptor[] getPropertyDescriptors(Class<?> clazz) {
-//        BeanInfo beanInfo = getBeanInfo(clazz);
-//        return beanInfo.getPropertyDescriptors();
-//    }
-
-//    /**
-//     * 获取类属性的PropertyDescriptor
-//     *
-//     * @param clazz
-//     * @param name
-//     * @return
-//     */
-//    public static PropertyDescriptor getPropertyDescriptor(Class<?> clazz, String name) {
-//        PropertyDescriptor[] propertyDescriptors = getPropertyDescriptors(clazz);
-//        if (propertyDescriptors == null) {
-//            return null;
-//        }
-//        for (PropertyDescriptor pd : propertyDescriptors) {
-//            if (StringUtils.equals(pd.getName(), name)) {
-//                return pd;
-//            }
-//        }
-//        return null;
-//    }
 
     /**
      * 获取对象指定属性值
