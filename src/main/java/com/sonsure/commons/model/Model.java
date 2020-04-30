@@ -116,7 +116,7 @@ public class Model extends Pageable {
      * @return
      */
     public Object getFieldValue(String fieldName) {
-        return ClassUtils.getFieldValue(this.getClass(), this, fieldName);
+        return ClassUtils.getFieldValue(this, fieldName);
     }
 
     public String getKeywords() {

@@ -36,16 +36,10 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.target>1.7</maven.compiler.target>
         <maven.compiler.source>1.7</maven.compiler.source>
-        <slf4j-api.version>1.7.25</slf4j-api.version>
-        <commons-lang3.version>3.7</commons-lang3.version>
-        <spring.version>4.2.4.RELEASE</spring.version>
-        <servlet-api.version>2.5</servlet-api.version>
-        <commons-io.version>2.6</commons-io.version>
-        <dom4j.version>1.6.1</dom4j.version>
+        <slf4j-api.version>1.7.30</slf4j-api.version>
+        <commons-lang3.version>3.9</commons-lang3.version>
         <snakeyaml.version>1.24</snakeyaml.version>
-
-        <aetherVersion>1.1.0</aetherVersion>
-        <mavenVersion>3.3.9</mavenVersion>
+        <org.apache.servicemix.bundles.dom4j.version>2.1.1_1</org.apache.servicemix.bundles.dom4j.version>
     </properties>
 
     <dependencies>
@@ -65,6 +59,12 @@
             <version>${snakeyaml.version}</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.dom4j</artifactId>
+            <version>${org.apache.servicemix.bundles.dom4j.version}</version>
+            <optional>true</optional>
+        </dependency>
 
     </dependencies>
 
@@ -78,13 +78,16 @@
                 <configuration>
                     <instructions>
                         <Bundle-ClassPath>.,{maven-dependencies}</Bundle-ClassPath>
-                        <Bundle-Vendor>Sonsure</Bundle-Vendor>
+                        <Bundle-Vendor>The Sonsure Software</Bundle-Vendor>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>Sonsure工具包</Bundle-Name>
                         <Import-Package>
                             org.apache.commons.lang3,
+                            org.apache.commons.lang3.builder,
                             org.slf4j,
-                            org.yaml.snakeyaml;resolution:=optional
+                            org.yaml.snakeyaml;resolution:=optional,
+                            org.dom4j;resolution:=optional,
+                            org.dom4j.io;resolution:=optional
                         </Import-Package>
                         <Bundle-Activator></Bundle-Activator>
                     </instructions>
@@ -153,6 +156,38 @@
                 <repository>
                     <id>oss</id>
                     <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+
+        <profile>
+            <id>locally</id>
+            <build>
+                <plugins>
+                    <!-- Source -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>locally</id>
+                    <url>http://localhost:8081/repository/maven-snapshots/</url>
+                </snapshotRepository>
+                <repository>
+                    <id>locally</id>
+                    <url>http://localhost:8081/repository/maven-releases/</url>
                 </repository>
             </distributionManagement>
         </profile>

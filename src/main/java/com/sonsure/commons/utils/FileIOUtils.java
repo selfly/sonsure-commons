@@ -1,9 +1,8 @@
 package com.sonsure.commons.utils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.sonsure.commons.exception.SonsureException;
+
+import java.io.*;
 
 /**
  * @author liyd
@@ -21,6 +20,34 @@ public class FileIOUtils {
         try (final ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             copy(input, output, 1024);
             return output.toByteArray();
+        }
+    }
+
+    /**
+     * Write byte array to file.
+     *
+     * @param file the file
+     * @param data the data
+     * @throws IOException the io exception
+     */
+    public static void writeByteArrayToFile(final File file, final byte[] data) {
+        writeByteArrayToFile(file, data, false);
+    }
+
+    /**
+     * Write byte array to file.
+     *
+     * @param file   the file
+     * @param data   the data
+     * @param append the append
+     * @throws IOException the io exception
+     */
+    public static void writeByteArrayToFile(final File file, final byte[] data, final boolean append) {
+
+        try (OutputStream out = new FileOutputStream(file, append)) {
+            out.write(data, 0, data.length);
+        } catch (IOException e) {
+            throw new SonsureException(e);
         }
     }
 

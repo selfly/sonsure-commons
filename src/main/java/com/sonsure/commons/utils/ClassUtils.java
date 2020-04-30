@@ -2,6 +2,7 @@ package com.sonsure.commons.utils;
 
 import com.sonsure.commons.bean.BeanFieldCache;
 import com.sonsure.commons.bean.IntrospectionCache;
+import com.sonsure.commons.exception.SonsureBeanException;
 import com.sonsure.commons.exception.SonsureException;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -233,15 +234,37 @@ public class ClassUtils {
     /**
      * 获取对象指定属性值
      *
-     * @param clazz
-     * @param obj
-     * @param fieldName
-     * @return
+     * @param obj       the obj
+     * @param fieldName the field name
+     * @return property value
      */
-    public static Object getFieldValue(Class<?> clazz, Object obj, String fieldName) {
-        PropertyDescriptor propertyDescriptor = getPropertyDescriptor(clazz, fieldName);
+    public static Object getPropertyValue(Object obj, String fieldName) {
+        if (obj == null) {
+            return null;
+        }
+        PropertyDescriptor propertyDescriptor = getPropertyDescriptor(obj.getClass(), fieldName);
         Method readMethod = propertyDescriptor.getReadMethod();
         return invokeMethod(readMethod, obj);
+    }
+
+    /**
+     * 获取对象指定属性值
+     *
+     * @param obj       the obj
+     * @param fieldName the field name
+     * @return field value
+     */
+    public static Object getFieldValue(Object obj, String fieldName) {
+        if (obj == null) {
+            return null;
+        }
+        try {
+            final Field beanField = getBeanField(obj.getClass(), fieldName);
+            beanField.setAccessible(true);
+            return beanField.get(obj);
+        } catch (IllegalAccessException e) {
+            throw new SonsureBeanException("获取属性值失败", e);
+        }
     }
 
     /**
