@@ -149,19 +149,20 @@ public class ClassUtils {
     }
 
     /**
-     * 获取对象指定属性值
+     * Sets bean field value.
      *
-     * @param obj       the obj
+     * @param bean      the bean
      * @param fieldName the field name
-     * @return property value
+     * @param value     the value
      */
-    public static Object getPropertyValue(Object obj, String fieldName) {
-        if (obj == null) {
-            return null;
+    public static void setFieldValue(Object bean, String fieldName, Object value) {
+        try {
+            final Field beanField = getBeanField(bean.getClass(), fieldName);
+            beanField.setAccessible(true);
+            beanField.set(bean, value);
+        } catch (IllegalAccessException e) {
+            throw new SonsureBeanException("设置属性值失败", e);
         }
-        PropertyDescriptor propertyDescriptor = getPropertyDescriptor(obj.getClass(), fieldName);
-        Method readMethod = propertyDescriptor.getReadMethod();
-        return invokeMethod(readMethod, obj);
     }
 
     /**
@@ -182,6 +183,35 @@ public class ClassUtils {
         } catch (IllegalAccessException e) {
             throw new SonsureBeanException("获取属性值失败", e);
         }
+    }
+
+    /**
+     * 获取对象指定属性值
+     *
+     * @param obj       the obj
+     * @param fieldName the field name
+     * @return property value
+     */
+    public static Object getPropertyValue(Object obj, String fieldName) {
+        if (obj == null) {
+            return null;
+        }
+        PropertyDescriptor propertyDescriptor = getPropertyDescriptor(obj.getClass(), fieldName);
+        Method readMethod = propertyDescriptor.getReadMethod();
+        return invokeMethod(readMethod, obj);
+    }
+
+    /**
+     * Sets property value.
+     *
+     * @param obj       the obj
+     * @param fieldName the field name
+     * @param value     the value
+     */
+    public static void setPropertyValue(Object obj, String fieldName, Object value) {
+        PropertyDescriptor propertyDescriptor = getPropertyDescriptor(obj.getClass(), fieldName);
+        Method writeMethod = propertyDescriptor.getWriteMethod();
+        invokeMethod(writeMethod, obj, value);
     }
 
     /**
