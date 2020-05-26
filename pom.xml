@@ -53,14 +53,15 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j-api.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j-api.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
@@ -93,8 +94,9 @@
                         <Import-Package>
                             org.apache.commons.lang3,
                             org.apache.commons.lang3.builder,
-                            org.slf4j,
+                            org.slf4j;resolution:=optional,
                             org.yaml.snakeyaml;resolution:=optional,
+                            org.xml.sax;resolution:=optional,,
                             org.dom4j;resolution:=optional,
                             org.dom4j.io;resolution:=optional
                         </Import-Package>
