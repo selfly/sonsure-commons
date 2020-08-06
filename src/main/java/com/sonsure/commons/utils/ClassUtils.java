@@ -215,21 +215,22 @@ public class ClassUtils {
     }
 
     /**
-     * bean属性转换为map
+     * Gets bean prop map.
      *
-     * @param object
-     * @return
+     * @param object           the object
+     * @param ignoreAnnotation the ignore annotation
+     * @param onlySelf         the only self
+     * @return the bean prop map
      */
-    public static Map<String, Object> getSelfBeanPropMap(Object object, Class<? extends Annotation> ignoreAnnotation) {
-
+    public static Map<String, Object> getBeanPropMap(Object object, Class<? extends Annotation> ignoreAnnotation, boolean onlySelf) {
         Map<String, Object> propMap = new HashMap<String, Object>();
-        PropertyDescriptor[] propertyDescriptors = getSelfPropertyDescriptors(object.getClass());
+        PropertyDescriptor[] propertyDescriptors = onlySelf ? getSelfPropertyDescriptors(object.getClass()) : getPropertyDescriptors(object.getClass());
         if (propertyDescriptors == null) {
             return propMap;
         }
         for (PropertyDescriptor pd : propertyDescriptors) {
             Method readMethod = pd.getReadMethod();
-            if (readMethod == null || readMethod.getAnnotation(ignoreAnnotation) != null) {
+            if (readMethod == null || (ignoreAnnotation != null && readMethod.getAnnotation(ignoreAnnotation) != null)) {
                 continue;
             }
 
@@ -237,6 +238,37 @@ public class ClassUtils {
             propMap.put(pd.getName(), value);
         }
         return propMap;
+    }
+
+    /**
+     * Gets bean prop map.
+     *
+     * @param object the object
+     * @return the bean prop map
+     */
+    public static Map<String, Object> getBeanPropMap(Object object) {
+        return getBeanPropMap(object, null, false);
+    }
+
+    /**
+     * Gets bean prop map.
+     *
+     * @param object           the object
+     * @param ignoreAnnotation the ignore annotation
+     * @return the bean prop map
+     */
+    public static Map<String, Object> getBeanPropMap(Object object, Class<? extends Annotation> ignoreAnnotation) {
+        return getBeanPropMap(object, ignoreAnnotation, false);
+    }
+
+    /**
+     * bean属性转换为map
+     *
+     * @param object
+     * @return
+     */
+    public static Map<String, Object> getSelfBeanPropMap(Object object, Class<? extends Annotation> ignoreAnnotation) {
+        return getBeanPropMap(object, ignoreAnnotation, true);
     }
 
     public static Method getMethod(Class<?> beanClazz, String methodName, Class<?>[] paramTypes) {

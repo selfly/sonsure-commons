@@ -15,7 +15,7 @@
 
     <groupId>com.sonsure</groupId>
     <artifactId>sonsure-commons</artifactId>
-    <version>3.0.0</version>
+    <version>4.0.0</version>
     <packaging>bundle</packaging>
 
     <name>sonsure-commons</name>
@@ -43,8 +43,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.target>1.7</maven.compiler.target>
-        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
         <slf4j-api.version>1.7.30</slf4j-api.version>
         <commons-lang3.version>3.9</commons-lang3.version>
         <snakeyaml.version>1.24</snakeyaml.version>

@@ -11,21 +11,20 @@ package com.sonsure.commons.exception;
 
 /**
  * @author liyd
- * @date 17/7/10
  */
-public class ValidationException extends SonsureException {
+public class SonsureCommonsException extends SonsureException {
 
-    private static final long serialVersionUID = 116371972019482410L;
+    private static final long serialVersionUID = 5991174454832836064L;
 
-    public ValidationException(String message, Throwable e) {
+    public SonsureCommonsException(String message, Throwable e) {
         super(message, e);
     }
 
-    public ValidationException(String message) {
+    public SonsureCommonsException(String message) {
         super(message);
     }
 
-    public ValidationException(String code, String message) {
+    public SonsureCommonsException(String code, String message) {
         super(code, message);
     }
 

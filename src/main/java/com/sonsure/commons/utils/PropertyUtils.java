@@ -217,7 +217,7 @@ public final class PropertyUtils {
             }
 
             if (file.exists()) {
-                URL url = new URL("file://" + file.getAbsolutePath());
+                URL url = file.toURI().toURL();
                 urls.add(url);
             } else {
                 Enumeration<URL> resources = classLoader.getResources(resource);
