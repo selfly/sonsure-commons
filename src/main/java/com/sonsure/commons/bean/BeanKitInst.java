@@ -21,10 +21,16 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.function.BiConsumer;
 
+/**
+ * @author liyd
+ */
 public class BeanKitInst {
 
-    private List<TypeConverter> typeConverters = new ArrayList<>();
+    private static final String[] EMPTY_ARRAY = new String[0];
+
+    private final List<TypeConverter> typeConverters = new ArrayList<>();
 
     public BeanKitInst() {
         typeConverters.add(new IEnumStringConverter());
@@ -34,8 +40,8 @@ public class BeanKitInst {
     /**
      * 拷贝属性值
      *
-     * @param orig
-     * @param dest
+     * @param orig the orig
+     * @param dest the dest
      */
     public void copyFields(Object orig, Object dest) {
 
@@ -65,63 +71,14 @@ public class BeanKitInst {
     }
 
     /**
-     * map转为bean，key名为下划线命名方式
-     *
-     * @param <T>       the type parameter
-     * @param mapList   the map list
-     * @param beanClass the bean class
-     * @return t list
-     */
-    public <T> List<T> underlineKeyMapToBean(List<Map<String, Object>> mapList, Class<T> beanClass) {
-        return mapToBean(mapList, beanClass, '_');
-    }
-
-    /**
-     * map转为bean，key名为bean属性名
-     *
-     * @param <T>       the type parameter
-     * @param mapList   the map list
-     * @param beanClass the bean class
-     * @return t list
-     */
-    public <T> List<T> mapToBean(List<Map<String, Object>> mapList, Class<T> beanClass) {
-        return mapToBean(mapList, beanClass, null);
-    }
-
-    /**
-     * map转为bean，最后一个参数指定map中的key转换成骆驼命名法(JavaBean中惯用的属性命名)的分隔符,例如login_name转换成loginName,分隔符为下划线_
-     * 指定了分隔符进行转换时如果属性不带分隔符会统一转成小写,毕竟JavaBean中除了常量外应该不会定义有大写的属性
-     * 为空则不进行任何转换
-     *
-     * @param <T>       the type parameter
-     * @param mapList   the map list
-     * @param beanClass the bean class
-     * @return t list
-     */
-    public <T> List<T> mapToBean(List<Map<String, Object>> mapList, Class<T> beanClass, Character delimiter) {
-
-        List<T> beanList = new ArrayList<T>(mapList == null ? 0 : mapList.size());
-        if (mapList == null) {
-            return beanList;
-        }
-        for (Map<String, Object> map : mapList) {
-
-            T t = mapToBean(map, beanClass, delimiter);
-
-            beanList.add(t);
-        }
-        return beanList;
-    }
-
-    /**
      * bean转换成map
      *
-     * @param obj
-     * @return
+     * @param obj the obj
+     * @return map
      */
     public Map<String, Object> beanToMap(Object obj) {
         if (obj == null) {
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
         Map<String, Object> map = new HashMap<>();
         PropertyDescriptor[] propertyDescriptors = ClassUtils.getPropertyDescriptors(obj.getClass());
@@ -144,23 +101,114 @@ public class BeanKitInst {
     /**
      * map转为bean
      *
+     * @param <T>       the type parameter
+     * @param <R>       the type parameter
      * @param map       the map
      * @param beanClass the bean class
-     * @return t
+     * @return t r
      */
-    public <T> T underlineKeyMapToBean(Map<String, Object> map, Class<T> beanClass) {
-        return mapToBean(map, beanClass, '_');
+    public <T extends Map<String, ?>, R> R underlineKeyMapToBean(T map, Class<R> beanClass) {
+        return mapToBean(map, beanClass, '_', null);
     }
 
     /**
      * map转为bean
      *
+     * @param <T>       the type parameter
+     * @param <R>       the type parameter
      * @param map       the map
      * @param beanClass the bean class
-     * @return t
+     * @param consumer  the consumer
+     * @return t r
      */
-    public <T> T mapToBean(Map<String, Object> map, Class<T> beanClass) {
-        return mapToBean(map, beanClass, null);
+    public <T extends Map<String, ?>, R> R underlineKeyMapToBean(T map, Class<R> beanClass, BiConsumer<T, R> consumer) {
+        return mapToBean(map, beanClass, '_', consumer);
+    }
+
+    /**
+     * map转为bean，key名为下划线命名方式
+     *
+     * @param <T>       the type parameter
+     * @param <R>       the type parameter
+     * @param mapList   the map list
+     * @param beanClass the bean class
+     * @return t list
+     */
+    public <T extends Map<String, ?>, R> List<R> underlineKeyMapToBean(List<T> mapList, Class<R> beanClass) {
+        return mapToBean(mapList, beanClass, '_', null);
+    }
+
+    /**
+     * map转为bean，key名为下划线命名方式
+     *
+     * @param <T>       the type parameter
+     * @param <R>       the type parameter
+     * @param mapList   the map list
+     * @param beanClass the bean class
+     * @param consumer  the consumer
+     * @return t list
+     */
+    public <T extends Map<String, ?>, R> List<R> underlineKeyMapToBean(List<T> mapList, Class<R> beanClass, BiConsumer<T, R> consumer) {
+        return mapToBean(mapList, beanClass, '_', consumer);
+    }
+
+    /**
+     * map转为bean
+     *
+     * @param <T>       the type parameter
+     * @param <R>       the type parameter
+     * @param mapList   the map list
+     * @param beanClass the bean class
+     * @return t list
+     */
+    public <T extends Map<String, ?>, R> List<R> mapToBean(List<T> mapList, Class<R> beanClass) {
+
+        if (mapList == null) {
+            return Collections.emptyList();
+        }
+        List<R> beanList = new ArrayList<>(mapList.size());
+        for (T t : mapList) {
+            R r = mapToBean(t, beanClass, null, null);
+            beanList.add(r);
+        }
+        return beanList;
+    }
+
+    /**
+     * map转为bean
+     *
+     * @param <T>       the type parameter
+     * @param <R>       the type parameter
+     * @param mapList   the map list
+     * @param beanClass the bean class
+     * @param delimiter the delimiter
+     * @return t list
+     */
+    public <T extends Map<String, ?>, R> List<R> mapToBean(List<T> mapList, Class<R> beanClass, Character delimiter) {
+
+        if (mapList == null) {
+            return Collections.emptyList();
+        }
+        List<R> beanList = new ArrayList<>(mapList.size());
+        for (T t : mapList) {
+            R r = mapToBean(t, beanClass, delimiter, null);
+            beanList.add(r);
+        }
+        return beanList;
+    }
+
+    /**
+     * map转为bean，key名为bean属性名
+     *
+     * @param <T>       the type parameter
+     * @param <R>       the type parameter
+     * @param mapList   the map list
+     * @param beanClass the bean class
+     * @param consumer  the consumer
+     * @return t list
+     */
+    public <T extends Map<String, ?>, R> List<R> mapToBean(List<T> mapList, Class<R> beanClass, BiConsumer<T, R> consumer) {
+        return mapToBean(mapList, beanClass, null, consumer);
     }
 
     /**
@@ -168,19 +216,86 @@ public class BeanKitInst {
      * 指定了分隔符进行转换时如果属性不带分隔符会统一转成小写,毕竟JavaBean中除了常量外应该不会定义有大写的属性
      * 为空则不进行任何转换
      *
+     * @param <T>       the type parameter
+     * @param <R>       the type parameter
+     * @param mapList   the map list
+     * @param beanClass the bean class
+     * @param delimiter the delimiter
+     * @param consumer  the consumer
+     * @return t list
+     */
+    public <T extends Map<String, ?>, R> List<R> mapToBean(List<T> mapList, Class<R> beanClass, Character delimiter, BiConsumer<T, R> consumer) {
+
+        if (mapList == null) {
+            return Collections.emptyList();
+        }
+        List<R> beanList = new ArrayList<>(mapList.size());
+        for (T t : mapList) {
+            R r = mapToBean(t, beanClass, delimiter, consumer);
+            beanList.add(r);
+        }
+        return beanList;
+    }
+
+    /**
+     * map转为bean
+     *
+     * @param <T>       the type parameter
+     * @param <R>       the type parameter
+     * @param map       the map
+     * @param beanClass the bean class
+     * @return t t
+     */
+    public <T extends Map<String, ?>, R> R mapToBean(T map, Class<R> beanClass) {
+        return mapToBean(map, beanClass, null, null);
+    }
+
+    /**
+     * map转为bean
+     *
+     * @param <T>       the type parameter
+     * @param <R>       the type parameter
      * @param map       the map
      * @param beanClass the bean class
      * @param delimiter the delimiter
-     * @return t
+     * @return t t
+     */
+    public <T extends Map<String, ?>, R> R mapToBean(T map, Class<R> beanClass, Character delimiter) {
+        return mapToBean(map, beanClass, delimiter, null);
+    }
+
+    /**
+     * map转为bean
+     *
+     * @param <T>       the type parameter
+     * @param <R>       the type parameter
+     * @param map       the map
+     * @param beanClass the bean class
+     * @param consumer  the consumer
+     * @return t t
+     */
+    public <T extends Map<String, ?>, R> R mapToBean(T map, Class<R> beanClass, BiConsumer<T, R> consumer) {
+        return mapToBean(map, beanClass, null, consumer);
+    }
+
+    /**
+     * map转为bean，delimiter参数指定map中的key转换成骆驼命名法(JavaBean中惯用的属性命名)的分隔符,例如login_name转换成loginName,分隔符为下划线_
+     * 指定了分隔符进行转换时如果属性不带分隔符会统一转成小写,毕竟JavaBean中除了常量外应该不会定义有大写的属性
+     * 为空则不进行任何转换
+     *
+     * @param <T>       the type parameter
+     * @param <R>       the type parameter
+     * @param srcMap    the src map
+     * @param beanClass the bean class
+     * @param delimiter the delimiter
+     * @param consumer  the consumer
+     * @return t r
      */
     @SuppressWarnings("unchecked")
-    public <T> T mapToBean(Map<String, Object> map, Class<T> beanClass, Character delimiter) {
+    public <T extends Map<String, ?>, R> R mapToBean(T srcMap, Class<R> beanClass, Character delimiter, BiConsumer<T, R> consumer) {
 
-        T bean = (T) ClassUtils.newInstance(beanClass);
-        if (map == null) {
-            return bean;
-        }
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
+        R bean = (R) ClassUtils.newInstance(beanClass);
+        for (Map.Entry<String, ?> entry : srcMap.entrySet()) {
 
             Object value = entry.getValue();
 
@@ -207,13 +322,77 @@ public class BeanKitInst {
 
                 ClassUtils.invokeMethod(writeMethod, bean, value);
             }
+            if (consumer != null) {
+                consumer.accept(srcMap, bean);
+            }
         }
         return bean;
     }
 
-    public <T> Page<T> copyPage(Class<T> clazz, Page<?> page) {
-        Page<T> resultPage = new Page<>(page.getPagination());
-        List<T> list = this.copyProperties(clazz, page.getList());
+    /**
+     * Copy page page.
+     *
+     * @param <T>   the type parameter
+     * @param <R>   the type parameter
+     * @param clazz the clazz
+     * @param page  the page
+     * @return the page
+     */
+    public <T, R> Page<R> copyPage(Class<R> clazz, Page<T> page) {
+        Page<R> resultPage = new Page<>(page.getPagination());
+        List<R> list = this.copyProperties(clazz, page.getList());
+        resultPage.setList(list);
+        return resultPage;
+    }
+
+    /**
+     * Copy page page.
+     *
+     * @param <T>              the type parameter
+     * @param <R>              the type parameter
+     * @param clazz            the clazz
+     * @param page             the page
+     * @param ignoreProperties the ignore properties
+     * @return the page
+     */
+    public <T, R> Page<R> copyPage(Class<R> clazz, Page<T> page, String[] ignoreProperties) {
+        Page<R> resultPage = new Page<>(page.getPagination());
+        List<R> list = this.copyProperties(clazz, page.getList(), ignoreProperties);
+        resultPage.setList(list);
+        return resultPage;
+    }
+
+    /**
+     * Copy page page.
+     *
+     * @param <T>      the type parameter
+     * @param <R>      the type parameter
+     * @param clazz    the clazz
+     * @param page     the page
+     * @param consumer the consumer
+     * @return the page
+     */
+    public <T, R> Page<R> copyPage(Class<R> clazz, Page<T> page, BiConsumer<T, R> consumer) {
+        Page<R> resultPage = new Page<>(page.getPagination());
+        List<R> list = this.copyProperties(clazz, page.getList(), consumer);
+        resultPage.setList(list);
+        return resultPage;
+    }
+
+    /**
+     * Copy page page.
+     *
+     * @param <T>              the type parameter
+     * @param <R>              the type parameter
+     * @param clazz            the clazz
+     * @param page             the page
+     * @param ignoreProperties the ignore properties
+     * @param consumer         the consumer
+     * @return the page
+     */
+    public <T, R> Page<R> copyPage(Class<R> clazz, Page<T> page, String[] ignoreProperties, BiConsumer<T, R> consumer) {
+        Page<R> resultPage = new Page<>(page.getPagination());
+        List<R> list = this.copyProperties(clazz, page.getList(), ignoreProperties, consumer);
         resultPage.setList(list);
         return resultPage;
     }
@@ -221,46 +400,70 @@ public class BeanKitInst {
     /**
      * 拷贝属性
      *
+     * @param <T>   the type parameter
+     * @param <R>   the type parameter
      * @param clazz the clazz
      * @param list  the list
      * @return the page list
      */
-    public <T> List<T> copyProperties(Class<T> clazz, List<?> list) {
-        return copyProperties(clazz, list, null);
+    public <T, R> List<R> copyProperties(Class<R> clazz, List<T> list) {
+        return copyProperties(clazz, list, EMPTY_ARRAY);
     }
 
     /**
      * 拷贝属性
      *
+     * @param <T>              the type parameter
+     * @param <R>              the type parameter
      * @param clazz            the clazz
      * @param list             the list
      * @param ignoreProperties the ignore properties
      * @return the page list
      */
-    public <T> List<T> copyProperties(Class<T> clazz, List<?> list, String[] ignoreProperties) {
+    public <T, R> List<R> copyProperties(Class<R> clazz, List<T> list, String[] ignoreProperties) {
+        return copyProperties(clazz, list, ignoreProperties, (BiConsumer<T, R>) null);
+    }
+
+    /**
+     * 拷贝属性
+     *
+     * @param <T>      the type parameter
+     * @param <R>      the type parameter
+     * @param clazz    the clazz
+     * @param list     the list
+     * @param consumer the consumer
+     * @return the page list
+     */
+    public <T, R> List<R> copyProperties(Class<R> clazz, List<T> list, BiConsumer<T, R> consumer) {
+        return copyProperties(clazz, list, EMPTY_ARRAY, consumer);
+    }
+
+    /**
+     * 拷贝属性
+     *
+     * @param <T>              the type parameter
+     * @param <R>              the type parameter
+     * @param clazz            the clazz
+     * @param list             the list
+     * @param ignoreProperties the ignore properties
+     * @param consumer         the consumer
+     * @return the page list
+     */
+    public <T, R> List<R> copyProperties(Class<R> clazz, List<T> list, String[] ignoreProperties, BiConsumer<T, R> consumer) {
 
         //返回的list列表
-        List<T> resultList = new ArrayList<T>();
+        List<R> resultList = new ArrayList<>();
 
         if (list == null || list.isEmpty()) {
             return resultList;
         }
 
-        Iterator<?> iterator = list.iterator();
-
         //循环调用转换单个对象
-        while (iterator.hasNext()) {
-
+        for (T obj : list) {
             try {
-
-                T t = clazz.newInstance();
-
-                Object obj = iterator.next();
-
-                t = copyProperties(t, obj, ignoreProperties);
-
-                resultList.add(t);
-
+                R r = clazz.newInstance();
+                r = copyProperties(r, obj, ignoreProperties, consumer);
+                resultList.add(r);
             } catch (Exception e) {
                 throw new SonsureBeanException("列表转换失败", e);
             }
@@ -269,35 +472,73 @@ public class BeanKitInst {
         return resultList;
     }
 
+
     /**
      * 单个对象拷贝
      *
+     * @param <T>    the type parameter
+     * @param <R>    the type parameter
      * @param target 目标对象
      * @param source 源对象
-     * @return 转换后的目标对象
+     * @return 转换后的目标对象 r
      */
-    public <T> T copyProperties(T target, Object source) {
-        return copyProperties(target, source, null);
+    public <T, R> R copyProperties(R target, T source) {
+        return copyProperties(target, source, EMPTY_ARRAY, null);
+    }
+
+    /**
+     * 单个对象拷贝
+     *
+     * @param <T>      the type parameter
+     * @param <R>      the type parameter
+     * @param target   目标对象
+     * @param source   源对象
+     * @param consumer the consumer
+     * @return 转换后的目标对象 r
+     */
+    public <T, R> R copyProperties(R target, T source, BiConsumer<T, R> consumer) {
+        return copyProperties(target, source, EMPTY_ARRAY, consumer);
     }
 
     /**
      * 单个对象转换
      *
+     * @param <T>              the type parameter
+     * @param <R>              the type parameter
      * @param target           目标对象
      * @param source           源对象
      * @param ignoreProperties 需要过滤的属性
-     * @return 转换后的目标对象
+     * @return 转换后的目标对象 r
      */
-    public <T> T copyProperties(T target, Object source, String[] ignoreProperties) {
+    public <T, R> R copyProperties(R target, T source, String[] ignoreProperties) {
+        return copyProperties(target, source, ignoreProperties, null);
+    }
+
+    /**
+     * 单个对象转换
+     *
+     * @param <T>              the type parameter
+     * @param <R>              the type parameter
+     * @param target           目标对象
+     * @param source           源对象
+     * @param ignoreProperties 需要过滤的属性
+     * @param consumer         the consumer
+     * @return 转换后的目标对象 r
+     */
+    public <T, R> R copyProperties(R target, T source, String[] ignoreProperties, BiConsumer<T, R> consumer) {
 
         //过滤的属性
-        List<String> ignoreList = (ignoreProperties != null) ? Arrays.asList(ignoreProperties) : null;
+        List<String> ignoreList = (ignoreProperties != null && ignoreProperties.length > 0) ? Arrays.asList(ignoreProperties) : Collections.emptyList();
 
         //拷贝相同的属性
         copySameProperties(target, source, ignoreList);
 
         //拷贝扩展属性
         copyExtensionProperties(target, source, ignoreList);
+
+        if (consumer != null) {
+            consumer.accept(source, target);
+        }
 
         return target;
     }
@@ -316,7 +557,8 @@ public class BeanKitInst {
 
         for (PropertyDescriptor targetPd : targetPds) {
 
-            if (targetPd.getWriteMethod() == null || (ignoreList != null && ignoreList.contains(targetPd.getName()))) {
+            final Method writeMethod = targetPd.getWriteMethod();
+            if (writeMethod == null || ignoreList.contains(targetPd.getName())) {
 
                 continue;
             }
@@ -330,8 +572,6 @@ public class BeanKitInst {
                 if (value == null) {
                     continue;
                 }
-                Method writeMethod = targetPd.getWriteMethod();
-
                 //自定义转换
                 value = typeConvert(sourcePd.getPropertyType(), targetPd.getPropertyType(), targetPd.getName(), value);
                 ClassUtils.invokeMethod(writeMethod, target, value);
@@ -342,9 +582,9 @@ public class BeanKitInst {
     /**
      * 拷贝
      *
-     * @param target
-     * @param source
-     * @param ignoreList
+     * @param target     the target
+     * @param source     the source
+     * @param ignoreList the ignore list
      */
     private static void copyExtensionProperties(Object target, Object source, List<String> ignoreList) {
 
@@ -357,7 +597,7 @@ public class BeanKitInst {
             return;
         }
         for (Map.Entry<String, Object> entry : extensionProperties.entrySet()) {
-            if (ignoreList != null && ignoreList.contains(entry.getKey())) {
+            if (ignoreList.contains(entry.getKey())) {
                 continue;
             }
             ((Model) target).addProperty(entry.getKey(), entry.getValue());
@@ -374,7 +614,7 @@ public class BeanKitInst {
      */
     private Object typeConvert(Class<?> sourcePropertyType, Class<?> targetPropertyType, String fileName, Object value) {
 
-        if (value == null || sourcePropertyType == targetPropertyType || (this.typeConverters == null || this.typeConverters.isEmpty())) {
+        if (value == null || sourcePropertyType == targetPropertyType) {
             return value;
         }
 
@@ -390,6 +630,7 @@ public class BeanKitInst {
      * 注册转换器
      *
      * @param converter the converter
+     * @return the bean kit inst
      */
     public BeanKitInst registerConverter(TypeConverter converter) {
         this.typeConverters.add(converter);
@@ -409,6 +650,8 @@ public class BeanKitInst {
 
     /**
      * 清空注册的转换器
+     *
+     * @return the bean kit inst
      */
     public BeanKitInst clearConverter() {
         this.typeConverters.clear();

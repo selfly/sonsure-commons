@@ -9,54 +9,40 @@
 
 package com.sonsure.commons.bean;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by liyd on 16/4/27.
+ * @author liyd
+ * @date 16/4/27
  */
 public class NumberConverter implements TypeConverter {
 
-    private List<Class<?>> supportClasses;
-
-    public NumberConverter() {
-        supportClasses = Arrays.asList(new Class<?>[]{BigDecimal.class, Long.class, Integer.class});
-    }
-
+    private static final List<Class<?>> SUPPORT_CLASSES = Arrays.asList(byte.class, short.class, int.class, long.class, float.class, double.class);
 
     @Override
     public boolean isSupport(Class<?> sourceClass, Class<?> targetClass, String fieldName) {
-        if (supportClasses.contains(sourceClass) && supportClasses.contains(targetClass)) {
-            return true;
-        }
-        return false;
+        return sourceClass != targetClass && (Number.class.isAssignableFrom(sourceClass) || SUPPORT_CLASSES.contains(sourceClass))
+                && (Number.class.isAssignableFrom(targetClass) || SUPPORT_CLASSES.contains(targetClass));
     }
 
     @Override
     public Object convert(Class<?> sourceClass, Class<?> targetClass, Object value) {
 
         //只做最常见的几种转换
-        if (sourceClass == BigDecimal.class) {
-            BigDecimal bigDecimal = (BigDecimal) value;
-            if (targetClass == Integer.class) {
-                return bigDecimal.intValue();
-            } else if (targetClass == Long.class) {
-                return bigDecimal.longValue();
-            } else if (targetClass == Double.class) {
-                return bigDecimal.doubleValue();
-            } else if (targetClass == Float.class) {
-                return bigDecimal.floatValue();
-            }
-        } else if (sourceClass == Long.class) {
-            if (targetClass == Integer.class) {
-                return ((Long) value).intValue();
-            }
-        } else if (sourceClass == Integer.class) {
-
-            if (targetClass == Long.class) {
-                return Long.valueOf((Integer) value);
-            }
+        final Number number = (Number) value;
+        if (targetClass == Byte.class || targetClass == byte.class) {
+            return number.byteValue();
+        } else if (targetClass == Short.class || targetClass == short.class) {
+            return number.shortValue();
+        } else if (targetClass == Integer.class || targetClass == int.class) {
+            return number.intValue();
+        } else if (targetClass == Long.class || targetClass == long.class) {
+            return number.longValue();
+        } else if (targetClass == Float.class || targetClass == float.class) {
+            return number.floatValue();
+        } else if (targetClass == Double.class || targetClass == double.class) {
+            return number.doubleValue();
         }
         return value;
     }

@@ -15,7 +15,7 @@
 
     <groupId>com.sonsure</groupId>
     <artifactId>sonsure-commons</artifactId>
-    <version>4.0.0</version>
+    <version>4.1.0</version>
     <packaging>bundle</packaging>
 
     <name>sonsure-commons</name>
@@ -49,6 +49,8 @@
         <commons-lang3.version>3.9</commons-lang3.version>
         <snakeyaml.version>1.24</snakeyaml.version>
         <org.apache.servicemix.bundles.dom4j.version>2.1.1_1</org.apache.servicemix.bundles.dom4j.version>
+        <lombok.version>1.18.10</lombok.version>
+        <junit.version>4.12</junit.version>
     </properties>
 
     <dependencies>
@@ -74,6 +76,18 @@
             <artifactId>org.apache.servicemix.bundles.dom4j</artifactId>
             <version>${org.apache.servicemix.bundles.dom4j.version}</version>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

@@ -31,6 +31,7 @@ public class IEnumStringConverter implements TypeConverter {
         return false;
     }
 
+    @Override
     public Object convert(Class<?> sourceClass, Class<?> targetClass, Object value) {
 
         if (IEnum.class.isAssignableFrom(sourceClass) && targetClass == String.class) {

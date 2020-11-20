@@ -12,6 +12,9 @@ package com.sonsure.commons.utils;
 import com.sonsure.commons.exception.SonsureException;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author liyd
@@ -37,7 +40,6 @@ public class FileIOUtils {
      *
      * @param file the file
      * @param data the data
-     * @throws IOException the io exception
      */
     public static void writeByteArrayToFile(final File file, final byte[] data) {
         writeByteArrayToFile(file, data, false);
@@ -49,7 +51,6 @@ public class FileIOUtils {
      * @param file   the file
      * @param data   the data
      * @param append the append
-     * @throws IOException the io exception
      */
     public static void writeByteArrayToFile(final File file, final byte[] data, final boolean append) {
 
@@ -79,5 +80,33 @@ public class FileIOUtils {
             count += n;
         }
         return count;
+    }
+
+    public static List<String> readLines(final InputStream input, final Charset encoding) throws IOException {
+        final InputStreamReader reader = new InputStreamReader(input, encoding);
+        return readLines(reader);
+    }
+
+    public static List<String> readLines(final Reader input) throws IOException {
+        final BufferedReader reader = toBufferedReader(input);
+        final List<String> list = new ArrayList<>();
+        String line = reader.readLine();
+        while (line != null) {
+            list.add(line);
+            line = reader.readLine();
+        }
+        return list;
+    }
+
+    /**
+     * Returns the given reader if it is a {@link BufferedReader}, otherwise creates a BufferedReader from the given
+     * reader.
+     *
+     * @param reader the reader to wrap or return (not null)
+     * @return the given reader or a new {@link BufferedReader} for the given reader
+     * @throws NullPointerException if the input parameter is null
+     */
+    public static BufferedReader toBufferedReader(final Reader reader) {
+        return reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader);
     }
 }
