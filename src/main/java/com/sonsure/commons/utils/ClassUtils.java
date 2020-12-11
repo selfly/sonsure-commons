@@ -13,6 +13,7 @@ import com.sonsure.commons.bean.BeanFieldCache;
 import com.sonsure.commons.bean.IntrospectionCache;
 import com.sonsure.commons.exception.SonsureBeanException;
 import com.sonsure.commons.exception.SonsureException;
+import com.sonsure.commons.model.Model;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -21,7 +22,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -413,6 +416,58 @@ public class ClassUtils {
             return Byte.valueOf(value.toString());
         }
         return value;
+    }
+
+    /**
+     * Is model type boolean.
+     *
+     * @param thisType the target type
+     * @return the boolean
+     */
+    public static boolean isModelType(Class<?> thisType) {
+        return isTargetType(thisType, Model.class);
+    }
+
+    /**
+     * Is target type boolean. support osgi
+     *
+     * @param thisType   the this type
+     * @param targetType the target type
+     * @return the boolean
+     */
+    public static boolean isTargetType(Class<?> thisType, Class<?> targetType) {
+        final ArrayList<Class<?>> types = new ArrayList<>();
+        getSuperTypes(thisType, types);
+        for (Class<?> tp : types) {
+            if (targetType.getName().equals(tp.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void getSuperTypes(Class<?> cls, List<Class<?>> superTypes) {
+        getInterfaces(cls, superTypes);
+        getSuperClasses(cls, superTypes);
+    }
+
+    private static void getSuperClasses(Class<?> cls, List<Class<?>> superClasses) {
+        final Class<?> superclass = cls.getSuperclass();
+        if (superclass != null) {
+            getSuperClasses(superclass, superClasses);
+            superClasses.add(superclass);
+        }
+    }
+
+    public static void getInterfaces(Class<?> cls, List<Class<?>> interfaces) {
+        final Class<?>[] ifs = cls.getInterfaces();
+        if (ifs.length == 0) {
+            return;
+        }
+        for (Class<?> anIf : ifs) {
+            getInterfaces(anIf, interfaces);
+            interfaces.add(anIf);
+        }
     }
 
     /**

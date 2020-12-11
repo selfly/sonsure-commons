@@ -10,7 +10,9 @@
 package com.sonsure.commons.utils;
 
 import com.sonsure.commons.enums.IEnum;
-import com.sonsure.commons.exception.SonsureException;
+import org.apache.commons.lang3.StringUtils;
+
+import java.lang.reflect.Method;
 
 /**
  * 枚举辅助类
@@ -21,87 +23,50 @@ import com.sonsure.commons.exception.SonsureException;
  */
 public final class EnumUtils {
 
-    /**
-     * 获取枚举的所有属性
-     *
-     * @param clazz
-     * @return
-     */
-    public static IEnum[] getEnums(Class<?> clazz) {
-        if (IEnum.class.isAssignableFrom(clazz)) {
-            Object[] enumConstants = clazz.getEnumConstants();
-            return (IEnum[]) enumConstants;
-        }
-        return null;
-    }
+    private static final String GET_CODE_METHOD = "getCode";
 
     /**
-     * 获取枚举的所有属性
+     * 转换
+     * osgi
      *
-     * @param enumClass
-     * @return
+     * @param <T>      the type parameter
+     * @param enumType the enum type
+     * @param source   the source
+     * @return i enum
      */
-    public static IEnum[] getEnums(String enumClass) {
-        try {
-            Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(enumClass);
-            return getEnums(clazz);
-        } catch (ClassNotFoundException e) {
-            throw new SonsureException("加载枚举类失败", e);
-        }
-    }
-
-    /**
-     * 获取枚举的所有属性
-     *
-     * @param clazz the clazz
-     * @param code  the code
-     * @return enum
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> T getEnum(Class<T> clazz, String code) {
-
-        T[] enumConstants = clazz.getEnumConstants();
-        if (IEnum.class.isAssignableFrom(clazz)) {
-            IEnum[] iEnums = (IEnum[]) enumConstants;
-            for (IEnum ienum : iEnums) {
-                if (ienum.getCode().equalsIgnoreCase(code)) {
-                    return (T) ienum;
-                }
-            }
-        } else {
-            for (T enumConstant : enumConstants) {
-                if (((Enum) enumConstant).name().equals(code)) {
-                    return enumConstant;
-                }
+    public static <T extends Enum> T getIEnum(Class<T> enumType, String source) {
+        final Method getCode = ClassUtils.getMethod(enumType, GET_CODE_METHOD, new Class<?>[]{});
+        final T[] enumConstants = enumType.getEnumConstants();
+        for (T enumConstant : enumConstants) {
+            final String value = (String) ClassUtils.invokeMethod(getCode, enumConstant);
+            if (StringUtils.equals(source, value)) {
+                return enumConstant;
             }
         }
         return null;
     }
 
     /**
-     * 获取枚举的所有属性
+     * Gets i enum val.
      *
-     * @param clazzName the clazzName
-     * @param code      the code
-     * @return enum
+     * @param enumType  the enum type
+     * @param enumValue the enum value
+     * @return the i enum val
      */
-    @SuppressWarnings("unchecked")
-    public static <T> T getEnum(String clazzName, String code) {
-        Class<?> clazz = ClassUtils.loadClass(clazzName);
-        if (!IEnum.class.isAssignableFrom(clazz)) {
-            return null;
-        }
-        IEnum[] enumConstants = (IEnum[]) clazz.getEnumConstants();
-        for (IEnum enumConstant : enumConstants) {
-            if (enumConstant.getCode().equalsIgnoreCase(code)) {
-                return (T) enumConstant;
-            }
-        }
-        return null;
+    public static String getIEnumVal(Class<?> enumType, Object enumValue) {
+        final Method getCode = ClassUtils.getMethod(enumType, GET_CODE_METHOD, new Class<?>[]{});
+        return (String) ClassUtils.invokeMethod(getCode, enumValue);
     }
 
-    public static String getEnumVal(String clazzName, String code) {
-        Object anEnum = getEnum(clazzName, code);
-        return anEnum == null ? code : ((IEnum) anEnum).getDesc();
+    /**
+     * Is i enum type boolean.
+     * osgi
+     *
+     * @param thisType the target type
+     * @return the boolean
+     */
+    public static boolean isIEnumType(Class<?> thisType) {
+        return ClassUtils.isTargetType(thisType, IEnum.class);
     }
+
 }
