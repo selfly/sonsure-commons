@@ -15,13 +15,14 @@ import java.util.List;
 /**
  * 验证结果
  *
+ * @author liyd
  */
 public class ValidationResult {
 
     /**
      * 是否成功
      */
-    private boolean               isSuccess;
+    private boolean isSuccess;
 
     /**
      * 验证错误
@@ -47,7 +48,7 @@ public class ValidationResult {
      */
     public void addError(ValidationError error) {
         if (errors == null) {
-            errors = new ArrayList<ValidationError>();
+            errors = new ArrayList<>();
         }
         errors.add(error);
     }
@@ -55,12 +56,4 @@ public class ValidationResult {
     public List<ValidationError> getErrors() {
         return errors;
     }
-
-    //    public int getTimeElapsed() {
-    //        return timeElapsed;
-    //    }
-    //
-    //    public void setTimeElapsed(int timeElapsed) {
-    //        this.timeElapsed = timeElapsed;
-    //    }
 }

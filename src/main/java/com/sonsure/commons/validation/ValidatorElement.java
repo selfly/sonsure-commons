@@ -13,9 +13,12 @@ import com.sonsure.commons.utils.UUIDUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Created by liyd on 17/1/23.
+ * @author liyd
+ * @date 17/1/23
  */
 public class ValidatorElement {
+
+    private static final String PREFIX = "ss.";
 
     /**
      * 验证器
@@ -25,23 +28,29 @@ public class ValidatorElement {
     /**
      * 待验证对象
      */
-    private Object    validateValue;
+    private Object validateValue;
 
-    /** 校验对象的名称 一般中文备注名 非属性名 */
-    private String    validateName;
+    /**
+     * 校验对象的名称 一般中文备注名 非属性名
+     */
+    private String validateName;
 
-    /** 指定的错误码 */
-    private String    errorCode;
+    /**
+     * 指定的错误码
+     */
+    private String errorCode;
 
-    /** 指定的错误信息 */
-    private String    errorMsg;
+    /**
+     * 指定的错误信息
+     */
+    private String errorMsg;
 
     /**
      * create
      *
-     * @param validateValue    待验证对象
-     * @param validator 验证器
-     * @param validateName 
+     * @param validateValue 待验证对象
+     * @param validateName  the validate name
+     * @param validator     验证器
      */
     public ValidatorElement(Object validateValue, String validateName, Validator validator) {
         this.validateValue = validateValue;
@@ -49,20 +58,25 @@ public class ValidatorElement {
         this.validator = validator;
     }
 
-    public String getErrorCode() {
-        //为空，自动生成一个唯一code
-        if (StringUtils.isBlank(errorCode)) {
-            this.errorCode = new StringBuilder(UUIDUtils.getUUID16(validateName.getBytes())).append(".")
-                .append(validator.validateCode()).toString();
+    public ValidatorResult validate() {
+        ValidatorResult result = this.getValidator().validate(this.validateValue, this.validateName);
+        ValidatorResult theResult = new ValidatorResult(result.isSuccess());
+        if (!result.isSuccess()) {
+            //为空，自动生成一个唯一code
+            if (StringUtils.isBlank(errorCode)) {
+                this.errorCode = new StringBuilder(PREFIX)
+                        .append(result.getCode())
+                        .append(".")
+                        .append(UUIDUtils.getUUID16(result.getMessage().getBytes()))
+                        .toString();
+            }
+            if (StringUtils.isBlank(errorMsg)) {
+                this.errorMsg = result.getMessage();
+            }
+            theResult.setCode(this.errorCode);
+            theResult.setCode(this.errorMsg);
         }
-        return errorCode;
-    }
-
-    public String getErrorMsg() {
-        if (StringUtils.isBlank(errorMsg)) {
-            this.errorMsg = validator.validateMsg(validateValue, validateName);
-        }
-        return errorMsg;
+        return theResult;
     }
 
     public Validator getValidator() {
@@ -75,10 +89,6 @@ public class ValidatorElement {
 
     public Object getValidateValue() {
         return validateValue;
-    }
-
-    public void setValidateValue(Object validateValue) {
-        this.validateValue = validateValue;
     }
 
     public String getValidateName() {

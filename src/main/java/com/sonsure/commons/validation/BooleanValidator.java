@@ -9,49 +9,43 @@
 
 package com.sonsure.commons.validation;
 
+import com.sonsure.commons.exception.ValidationException;
+import org.apache.commons.lang3.StringUtils;
+
 /**
- * Created by liyd on 17/3/19.
+ * @author liyd
+ * @date 17/3/19
  */
 public class BooleanValidator implements Validator {
 
-    public static final int FALSE = 0;
+    public static final String[] FALSE = {PREFIX + "not.eq.false", "必须为false"};
 
-    public static final int TRUE  = 1;
+    public static final String[] TRUE = {PREFIX + "not.eq.true", "必须为true"};
 
-    private int             type;
+    private final String type;
 
-    public BooleanValidator(int type) {
+    public BooleanValidator(String type) {
         this.type = type;
     }
 
-    public boolean validate(Object value) {
+    @Override
+    public ValidatorResult validate(Object value, String validateName) {
+        ValidatorResult validatorResult = new ValidatorResult(false);
         if (value == null) {
-            return false;
+            return validatorResult;
         }
-        if (this.type == FALSE) {
-            return !((Boolean) value);
-        } else if (this.type == TRUE) {
-            return ((Boolean) value);
+        if (StringUtils.equals(type, FALSE[0])) {
+            validatorResult.setSuccess(!((Boolean) value));
+            validatorResult.setCode(FALSE[0]);
+            validatorResult.setMessage(validateName + FALSE[1]);
+            return validatorResult;
+        } else if (StringUtils.equals(type, TRUE[0])) {
+            validatorResult.setSuccess((Boolean) value);
+            validatorResult.setCode(TRUE[0]);
+            validatorResult.setMessage(validateName + TRUE[1]);
+            return validatorResult;
         } else {
-            return false;
-        }
-    }
-
-    public String validateCode() {
-        if (this.type == FALSE) {
-            return "not.eq.false";
-        } else {
-            return "not.eq.true";
-        }
-    }
-
-    public String validateMsg(Object value, String validateName) {
-        if (this.type == FALSE) {
-            return validateName + "必须为false";
-        } else if (this.type == TRUE) {
-            return validateName + "必须为true";
-        } else {
-            return "";
+            throw new ValidationException("不支持的校验");
         }
     }
 }

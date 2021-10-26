@@ -12,11 +12,15 @@ package com.sonsure.commons.validation;
 import java.util.Collection;
 
 /**
- * Created by liyd on 17/1/24.
+ * @author liyd
+ * @date 17/1/24
  */
 public class CollectionEachNotNullValidator implements Validator {
 
-    public boolean validate(Object value) {
+    public static final String[] COLLECTION_EACH_NOT_NULL = {PREFIX + "collection.each.not.null", "{0}的每个元素都不能为空"};
+
+    @Override
+    public ValidatorResult validate(Object value, String validateName) {
         if (value == null) {
             return false;
         }
@@ -29,10 +33,12 @@ public class CollectionEachNotNullValidator implements Validator {
         return true;
     }
 
+    @Override
     public String validateCode() {
         return "collection.each.not.null";
     }
 
+    @Override
     public String validateMsg(Object value, String validateName) {
         return validateName + "中的每个元素都不能为空";
     }

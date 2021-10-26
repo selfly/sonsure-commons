@@ -39,6 +39,7 @@ public class NumberValidator implements Validator {
         this.type = type;
     }
 
+    @Override
     public boolean validate(Object value) {
         Object[] values = (Object[]) value;
         BigDecimal val = new BigDecimal(String.valueOf(values[0]));
@@ -60,6 +61,7 @@ public class NumberValidator implements Validator {
         }
     }
 
+    @Override
     public String validateCode() {
         switch (type) {
             case GT:
@@ -77,6 +79,7 @@ public class NumberValidator implements Validator {
         }
     }
 
+    @Override
     public String validateMsg(Object value, String validateName) {
         Object[] values = (Object[]) value;
         switch (type) {

@@ -14,14 +14,17 @@ package com.sonsure.commons.validation;
  */
 public class NotNullValidator implements Validator {
 
+    @Override
     public boolean validate(Object obj) {
         return obj != null;
     }
 
+    @Override
     public String validateCode() {
         return "not.null";
     }
 
+    @Override
     public String validateMsg(Object value, String validateName) {
         return validateName + "不能为空";
     }

@@ -19,14 +19,15 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Created by liyd on 17/1/23.
+ * @author liyd
+ * @date 17/1/23
  */
 public final class Verifier {
 
     /**
      * 校验的元素信息
      */
-    private List<ValidatorElement> validatorElements;
+    private final List<ValidatorElement> validatorElements;
 
     public Verifier() {
         validatorElements = new ArrayList<ValidatorElement>();
@@ -58,21 +59,21 @@ public final class Verifier {
 
     public Verifier notBlank(String value, String name) {
         ValidatorElement validatorElement = new ValidatorElement(value, name,
-                new StringValidator(StringValidator.NOT_BLANK));
+                new StringValidator(StringValidator.NOT_BLANK[0]));
         validatorElements.add(validatorElement);
         return this;
     }
 
     public Verifier minLength(String value, int minLength, String name) {
         ValidatorElement validatorElement = new ValidatorElement(new Object[]{value, minLength}, name,
-                new StringValidator(StringValidator.MIN_LENGTH));
+                new StringValidator(StringValidator.MIN_LENGTH[0]));
         validatorElements.add(validatorElement);
         return this;
     }
 
     public Verifier maxLength(String value, int maxLength, String name) {
         ValidatorElement validatorElement = new ValidatorElement(new Object[]{value, maxLength}, name,
-                new StringValidator(StringValidator.MAX_LENGTH));
+                new StringValidator(StringValidator.MAX_LENGTH[0]));
         validatorElements.add(validatorElement);
         return this;
     }
@@ -91,7 +92,7 @@ public final class Verifier {
 
     public Verifier eqLength(String value, int maxLength, String name) {
         ValidatorElement validatorElement = new ValidatorElement(new Object[]{value, maxLength}, name,
-                new StringValidator(StringValidator.EQ_LENGTH));
+                new StringValidator(StringValidator.EQ_LENGTH[0]));
         validatorElements.add(validatorElement);
         return this;
     }
@@ -105,14 +106,14 @@ public final class Verifier {
 
     public Verifier mustFalse(Boolean bool, String name) {
         ValidatorElement validatorElement = new ValidatorElement(bool, name,
-                new BooleanValidator(BooleanValidator.FALSE));
+                new BooleanValidator(BooleanValidator.FALSE[0]));
         validatorElements.add(validatorElement);
         return this;
     }
 
     public Verifier mustTrue(Boolean bool, String name) {
         ValidatorElement validatorElement = new ValidatorElement(bool, name,
-                new BooleanValidator(BooleanValidator.TRUE));
+                new BooleanValidator(BooleanValidator.TRUE[0]));
         validatorElements.add(validatorElement);
         return this;
     }
@@ -165,21 +166,21 @@ public final class Verifier {
 
     public Verifier mustEq(String value, String expectVal, String name) {
         ValidatorElement validatorElement = new ValidatorElement(new Object[]{value, expectVal}, name,
-                new StringValidator(StringValidator.EQ));
+                new StringValidator(StringValidator.MUST_EQ[0]));
         validatorElements.add(validatorElement);
         return this;
     }
 
     public Verifier notEq(String value, String expectVal, String name) {
         ValidatorElement validatorElement = new ValidatorElement(new Object[]{value, expectVal}, name,
-                new StringValidator(StringValidator.NOT_EQ));
+                new StringValidator(StringValidator.NOT_EQ[0]));
         validatorElements.add(validatorElement);
         return this;
     }
 
     public Verifier mustEqIgnoreCase(String value, String expectVal, String name) {
         ValidatorElement validatorElement = new ValidatorElement(new Object[]{value, expectVal}, name,
-                new StringValidator(StringValidator.EQ_IGNORE_CASE));
+                new StringValidator(StringValidator.MUST_EQ_IGNORE_CASE[0]));
         validatorElements.add(validatorElement);
         return this;
     }
@@ -249,8 +250,8 @@ public final class Verifier {
     /**
      * 单独指定错误码
      *
-     * @param errorCode
-     * @return
+     * @param errorCode the error code
+     * @return verifier
      */
     public Verifier errorCode(String errorCode) {
         getLastValidationElement().setErrorCode(errorCode);
@@ -260,8 +261,8 @@ public final class Verifier {
     /**
      * 单独指定错误信息
      *
-     * @param errorMsg
-     * @return
+     * @param errorMsg the error msg
+     * @return verifier
      */
     public Verifier errorMsg(String errorMsg) {
         getLastValidationElement().setErrorMsg(errorMsg);
@@ -271,8 +272,8 @@ public final class Verifier {
     /**
      * 单独指定错误信息
      *
-     * @param iEnum
-     * @return
+     * @param iEnum the enum
+     * @return verifier
      */
     public Verifier error(IEnum iEnum) {
         ValidatorElement lastValidationElement = getLastValidationElement();
@@ -296,17 +297,15 @@ public final class Verifier {
 
         for (ValidatorElement validatorElement : validatorElements) {
 
-            boolean validate = validatorElement.getValidator().validate(validatorElement.getValidateValue());
+            ValidatorResult validatorResult = validatorElement.validate();
 
-            if (!validate) {
-                String errorCode = validatorElement.getErrorCode();
-                String errorMsg = validatorElement.getErrorMsg();
+            if (!validatorResult.isSuccess()) {
                 if (invalidFast) {
-                    throw new ValidationException(errorCode, errorMsg);
+                    throw new ValidationException(validatorResult.getCode(), validatorResult.getMessage());
                 } else {
-
                     ValidationError validationError = new ValidationError();
-                    validationError.setErrorCode(errorCode).setErrorMsg(errorMsg)
+                    validationError.setErrorCode(validatorResult.getCode())
+                            .setErrorMsg(validatorResult.getMessage())
                             .setName(validatorElement.getValidateName())
                             .setInvalidValue(validatorElement.getValidateValue());
 

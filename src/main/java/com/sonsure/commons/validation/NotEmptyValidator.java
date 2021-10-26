@@ -16,14 +16,17 @@ import java.util.Collection;
  */
 public class NotEmptyValidator implements Validator {
 
+    @Override
     public String validateCode() {
         return "not.empty";
     }
 
+    @Override
     public String validateMsg(Object value, String validateName) {
         return validateName + "不能为空";
     }
 
+    @Override
     public boolean validate(Object obj) {
         if (obj == null) {
             return false;

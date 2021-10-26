@@ -27,6 +27,7 @@ public class CollectionValidator implements Validator {
         this.type = type;
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
 	public boolean validate(Object value) {
 
@@ -50,6 +51,7 @@ public class CollectionValidator implements Validator {
         }
     }
 
+    @Override
     public String validateCode() {
         if (type == MUST_EMPTY) {
             return "must.empty";
@@ -64,6 +66,7 @@ public class CollectionValidator implements Validator {
         }
     }
 
+    @Override
     public String validateMsg(Object value, String validateName) {
         if (type == MUST_EMPTY) {
             return validateName + "必须为空";

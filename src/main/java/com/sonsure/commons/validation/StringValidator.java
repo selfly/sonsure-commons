@@ -9,107 +9,90 @@
 
 package com.sonsure.commons.validation;
 
+import com.sonsure.commons.exception.ValidationException;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Created by liyd on 17/2/13.
+ * @author liyd
+ * @date 17/2/13
  */
 public class StringValidator implements Validator {
 
-    public static final int NOT_BLANK      = 0;
+    public static final String[] NOT_BLANK = {PREFIX + "not.blank", "不能为空"};
 
-    public static final int NOT_EMPTY      = 1;
+    public static final String[] NOT_EMPTY = {PREFIX + "not.empty", "不能为空"};
 
-    public static final int EQ             = 2;
+    public static final String[] MUST_EQ = {PREFIX + "must.eq", "必须相同"};
 
-    public static final int EQ_IGNORE_CASE = 3;
+    public static final String[] MUST_EQ_IGNORE_CASE = {PREFIX + "must.eq.ignore.case", "必须相同"};
 
-    public static final int MIN_LENGTH     = 4;
+    public static final String[] NOT_EQ = {PREFIX + "not.eq", "不能等于{0}"};
 
-    public static final int MAX_LENGTH     = 5;
+    public static final String[] MIN_LENGTH = {PREFIX + "min.length", "允许最小长度为{0}"};
 
-    public static final int EQ_LENGTH      = 6;
+    public static final String[] MAX_LENGTH = {PREFIX + "max.length", "允许最大长度为{0}"};
 
-    public static final int NOT_EQ         = 7;
+    public static final String[] EQ_LENGTH = {PREFIX + "eq.length", "长度必须为{0}"};
 
-    private int             type;
 
-    public StringValidator(int type) {
+    private final String type;
+
+    public StringValidator(String type) {
         this.type = type;
     }
 
     @Override
-    public boolean validate(Object value) {
+    public ValidatorResult validate(Object value, String validateName) {
 
-        if (type == NOT_BLANK) {
-            return StringUtils.isNotBlank((String) value);
-        } else if (type == NOT_EMPTY) {
-            return StringUtils.isNotEmpty((String) value);
-        } else if (type == EQ) {
+        ValidatorResult validatorResult = new ValidatorResult(true);
+        if (StringUtils.equals(type, NOT_BLANK[0])) {
+            validatorResult.setSuccess(StringUtils.isNotBlank((String) value));
+            validatorResult.setCode(NOT_BLANK[0]);
+            validatorResult.setMessage(validateName + NOT_BLANK[1]);
+            return validatorResult;
+        } else if (StringUtils.equals(type, NOT_EMPTY[0])) {
+            validatorResult.setSuccess(StringUtils.isNotEmpty((String) value));
+            validatorResult.setCode(NOT_EMPTY[0]);
+            validatorResult.setMessage(validateName + NOT_EMPTY[1]);
+            return validatorResult;
+        } else if (StringUtils.equals(type, MUST_EQ[0])) {
             Object[] values = (Object[]) value;
-            return StringUtils.equals((String) values[0], (String) values[1]);
-        } else if (type == EQ_IGNORE_CASE) {
+            validatorResult.setSuccess(StringUtils.equals((String) values[0], (String) values[1]));
+            validatorResult.setCode(MUST_EQ[0]);
+            validatorResult.setMessage(validateName + MUST_EQ[1]);
+            return validatorResult;
+        } else if (StringUtils.equals(type, MUST_EQ_IGNORE_CASE[0])) {
             Object[] values = (Object[]) value;
-            return StringUtils.equalsIgnoreCase((String) values[0], (String) values[1]);
-        } else if (type == MIN_LENGTH) {
+            validatorResult.setSuccess(StringUtils.equalsIgnoreCase((String) values[0], (String) values[1]));
+            validatorResult.setCode(MUST_EQ_IGNORE_CASE[0]);
+            validatorResult.setMessage(validateName + MUST_EQ_IGNORE_CASE[1]);
+            return validatorResult;
+        } else if (StringUtils.equals(type, MIN_LENGTH[0])) {
             Object[] values = (Object[]) value;
-            return StringUtils.length((String) values[0]) >= (Integer) values[1];
-        } else if (type == MAX_LENGTH) {
+            validatorResult.setSuccess(StringUtils.length((String) values[0]) >= (Integer) values[1]);
+            validatorResult.setCode(MIN_LENGTH[0]);
+            validatorResult.setMessage(validateName + MIN_LENGTH[1]);
+            return validatorResult;
+        } else if (StringUtils.equals(type, MAX_LENGTH[0])) {
             Object[] values = (Object[]) value;
-            return StringUtils.length((String) values[0]) <= (Integer) values[1];
-        } else if (type == EQ_LENGTH) {
+            validatorResult.setSuccess(StringUtils.length((String) values[0]) <= (Integer) values[1]);
+            validatorResult.setCode(MAX_LENGTH[0]);
+            validatorResult.setMessage(validateName + MAX_LENGTH[1]);
+            return validatorResult;
+        } else if (StringUtils.equals(type, EQ_LENGTH[0])) {
             Object[] values = (Object[]) value;
-            return StringUtils.length((String) values[0]) == (Integer) values[1];
-        } else if (type == NOT_EQ) {
+            validatorResult.setSuccess(StringUtils.length((String) values[0]) == (Integer) values[1]);
+            validatorResult.setCode(EQ_LENGTH[0]);
+            validatorResult.setMessage(validateName + EQ_LENGTH[1]);
+            return validatorResult;
+        } else if (StringUtils.equals(type, NOT_EQ[0])) {
             Object[] values = (Object[]) value;
-            return !StringUtils.equals((String) values[0], (String) values[1]);
+            validatorResult.setSuccess(!StringUtils.equals((String) values[0], (String) values[1]));
+            validatorResult.setCode(NOT_EQ[0]);
+            validatorResult.setMessage(validateName + NOT_EQ[1]);
+            return validatorResult;
         } else {
-            throw new UnsupportedOperationException("不支持的字符串操作");
-        }
-    }
-
-    @Override
-    public String validateCode() {
-        if (type == NOT_BLANK) {
-            return "not.blank";
-        } else if (type == NOT_EMPTY) {
-            return "not.empty";
-        } else if (type == EQ) {
-            return "must.eq";
-        } else if (type == EQ_IGNORE_CASE) {
-            return "must.eq.ignore.case";
-        } else if (type == MIN_LENGTH) {
-            return "min.length";
-        } else if (type == MAX_LENGTH) {
-            return "max.length";
-        } else if (type == NOT_EQ) {
-            return "not.eq";
-        } else {
-            return "";
-        }
-    }
-
-    @Override
-    public String validateMsg(Object value, String validateName) {
-        if (type == NOT_BLANK) {
-            return validateName + "不能为空";
-        } else if (type == NOT_EMPTY) {
-            return validateName + "不能为空";
-        } else if (type == EQ) {
-            return validateName + "不相同";
-        } else if (type == EQ_IGNORE_CASE) {
-            return validateName + "不相同";
-        } else if (type == MIN_LENGTH) {
-            Object[] values = (Object[]) value;
-            return validateName + "允许最小长度为" + values[1];
-        } else if (type == MAX_LENGTH) {
-            Object[] values = (Object[]) value;
-            return validateName + "允许最大长度为" + values[1];
-        } else if (type == NOT_EQ) {
-            Object[] values = (Object[]) value;
-            return validateName + "不能等于" + values[1];
-        } else {
-            return "";
+            throw new ValidationException("不支持的校验");
         }
     }
 }
