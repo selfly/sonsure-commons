@@ -9,92 +9,86 @@
 
 package com.sonsure.commons.validation;
 
+import com.sonsure.commons.exception.ValidationException;
+import org.apache.commons.lang3.StringUtils;
+
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 
 /**
- * 最小值验证
- * 
- * Created by liyd on 17/1/24.
+ * Number验证
+ * <p>
+ *
+ * @author liyd
+ * @date 17/1/24
  */
 public class NumberValidator implements Validator {
 
-    /** 表示大于 */
-    public static final int GT    = 0;
+    /**
+     * 表示大于
+     */
+    public static final String[] GT = {PREFIX + "number.must.gt", "{0}必须大于{1}"};
 
-    /** 表示小于 */
-    public static final int LT    = 1;
+    /**
+     * 表示小于
+     */
+    public static final String[] LT = {PREFIX + "number.must.lt", "{0}必须小于{1}"};
 
-    /** 表示大于等于 */
-    public static final int GT_EQ = 2;
+    /**
+     * 表示大于等于
+     */
+    public static final String[] GT_EQ = {PREFIX + "number.must.gt.eq", "{0}必须大于等于{1}"};
 
-    /** 表示小于等于 */
-    public static final int LT_EQ = 3;
+    /**
+     * 表示小于等于
+     */
+    public static final String[] LT_EQ = {PREFIX + "number.must.lt.eq", "{0}必须小于等于{1}"};
 
-    /** 表示等于 */
-    public static final int EQ    = 4;
+    /**
+     * 表示等于
+     */
+    public static final String[] EQ = {PREFIX + "number.must.eq", "{0}必须等于{1}"};
 
-    private int             type;
+    private final String type;
 
-    public NumberValidator(int type) {
+    public NumberValidator(String type) {
         this.type = type;
     }
 
     @Override
-    public boolean validate(Object value) {
+    public ValidatorResult validate(Object value, String validateName) {
         Object[] values = (Object[]) value;
         BigDecimal val = new BigDecimal(String.valueOf(values[0]));
         BigDecimal expectVal = new BigDecimal(String.valueOf(values[1]));
         int i = val.compareTo(expectVal);
-        switch (type) {
-            case GT:
-                return i > 0;
-            case LT:
-                return i < 0;
-            case GT_EQ:
-                return i >= 0;
-            case LT_EQ:
-                return i <= 0;
-            case EQ:
-                return i == 0;
-            default:
-                throw new UnsupportedOperationException("不支持的数字对比操作");
-        }
-    }
-
-    @Override
-    public String validateCode() {
-        switch (type) {
-            case GT:
-                return "must.gt";
-            case LT:
-                return "must.lt";
-            case GT_EQ:
-                return "must.gt.eq";
-            case LT_EQ:
-                return "must.lt.eq";
-            case EQ:
-                return "must.eq";
-            default:
-                return "";
-        }
-    }
-
-    @Override
-    public String validateMsg(Object value, String validateName) {
-        Object[] values = (Object[]) value;
-        switch (type) {
-            case GT:
-                return validateName + "必须大于" + values[1];
-            case LT:
-                return validateName + "必须小于" + values[1];
-            case GT_EQ:
-                return validateName + "必须大于等于" + values[1];
-            case LT_EQ:
-                return validateName + "必须小于等于" + values[1];
-            case EQ:
-                return validateName + "必须等于" + values[1];
-            default:
-                return "";
+        ValidatorResult result = new ValidatorResult(false);
+        if (StringUtils.equals(type, GT[0])) {
+            result.setSuccess(i > 0);
+            result.setCode(GT[0]);
+            result.setMessage(MessageFormat.format(GT[1], validateName, expectVal));
+            return result;
+        } else if (StringUtils.equals(type, LT[0])) {
+            result.setSuccess(i < 0);
+            result.setCode(LT[0]);
+            result.setMessage(MessageFormat.format(LT[1], validateName, expectVal));
+            return result;
+        } else if (StringUtils.equals(type, GT_EQ[0])) {
+            result.setSuccess(i >= 0);
+            result.setCode(GT_EQ[0]);
+            result.setMessage(MessageFormat.format(GT_EQ[1], validateName, expectVal));
+            return result;
+        } else if (StringUtils.equals(type, LT_EQ[0])) {
+            result.setSuccess(i <= 0);
+            result.setCode(LT_EQ[0]);
+            result.setMessage(MessageFormat.format(LT_EQ[1], validateName, expectVal));
+            return result;
+        } else if (StringUtils.equals(type, EQ[0])) {
+            result.setSuccess(i == 0);
+            result.setCode(EQ[0]);
+            result.setMessage(MessageFormat.format(EQ[1], validateName, expectVal));
+            return result;
+        } else {
+            throw new ValidationException("不支持的数字对比操作");
         }
     }
 }

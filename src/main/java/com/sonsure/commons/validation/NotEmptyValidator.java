@@ -12,35 +12,31 @@ package com.sonsure.commons.validation;
 import java.util.Collection;
 
 /**
- * Created by liyd on 17/1/23.
+ * @author liyd
+ * @date 17/1/23
  */
 public class NotEmptyValidator implements Validator {
 
-    @Override
-    public String validateCode() {
-        return "not.empty";
-    }
+    private static final String[] NOT_EMPTY = {PREFIX + "not.empty", "不能为空"};
 
     @Override
-    public String validateMsg(Object value, String validateName) {
-        return validateName + "不能为空";
-    }
-
-    @Override
-    public boolean validate(Object obj) {
+    public ValidatorResult validate(Object obj, String validateName) {
+        ValidatorResult validatorResult = new ValidatorResult(false);
         if (obj == null) {
-            return false;
+            return validatorResult;
         }
         if (obj instanceof Collection) {
             Collection<?> cts = (Collection<?>) obj;
-            return cts != null && !cts.isEmpty();
+            validatorResult.setSuccess(!cts.isEmpty());
         } else if (obj.getClass().isArray()) {
-            return ((Object[]) obj).length > 0;
+            validatorResult.setSuccess(((Object[]) obj).length > 0);
         } else if (obj instanceof String) {
-            return !((String) obj).isEmpty();
+            validatorResult.setSuccess(!((String) obj).isEmpty());
         } else {
             throw new UnsupportedOperationException("不支持的参数类型");
         }
-
+        validatorResult.setCode(NOT_EMPTY[0]);
+        validatorResult.setMessage(validateName + NOT_EMPTY[1]);
+        return validatorResult;
     }
 }

@@ -10,22 +10,18 @@
 package com.sonsure.commons.validation;
 
 /**
- * Created by liyd on 17/1/23.
+ * @author liyd
+ * @date 17/1/23
  */
 public class NotNullValidator implements Validator {
 
-    @Override
-    public boolean validate(Object obj) {
-        return obj != null;
-    }
+    private static final String[] NOT_NULL = {PREFIX + "not.null", "不能为空"};
 
     @Override
-    public String validateCode() {
-        return "not.null";
-    }
-
-    @Override
-    public String validateMsg(Object value, String validateName) {
-        return validateName + "不能为空";
+    public ValidatorResult validate(Object obj, String validateName) {
+        ValidatorResult validatorResult = new ValidatorResult(obj != null);
+        validatorResult.setCode(NOT_NULL[0]);
+        validatorResult.setMessage(validateName + NOT_NULL[1]);
+        return validatorResult;
     }
 }

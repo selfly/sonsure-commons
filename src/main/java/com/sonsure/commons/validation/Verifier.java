@@ -99,7 +99,7 @@ public final class Verifier {
 
     public Verifier mustEmpty(Collection<?> value, String name) {
         ValidatorElement validatorElement = new ValidatorElement(value, name,
-                new CollectionValidator(CollectionValidator.MUST_EMPTY));
+                new CollectionValidator(CollectionValidator.MUST_EMPTY[0]));
         validatorElements.add(validatorElement);
         return this;
     }
@@ -120,21 +120,21 @@ public final class Verifier {
 
     public Verifier minSize(Collection<?> value, int minSize, String name) {
         ValidatorElement validatorElement = new ValidatorElement(new Object[]{value, minSize}, name,
-                new CollectionValidator(CollectionValidator.MIN_SIZE));
+                new CollectionValidator(CollectionValidator.MIN_SIZE[0]));
         validatorElements.add(validatorElement);
         return this;
     }
 
     public Verifier maxSize(Collection<?> value, int maxSize, String name) {
         ValidatorElement validatorElement = new ValidatorElement(new Object[]{value, maxSize}, name,
-                new CollectionValidator(CollectionValidator.MAX_SIZE));
+                new CollectionValidator(CollectionValidator.MAX_SIZE[0]));
         validatorElements.add(validatorElement);
         return this;
     }
 
     public Verifier eqSize(Collection<?> value, int eqSize, String name) {
         ValidatorElement validatorElement = new ValidatorElement(new Object[]{value, eqSize}, name,
-                new CollectionValidator(CollectionValidator.EQ_SIZE));
+                new CollectionValidator(CollectionValidator.EQ_SIZE[0]));
         validatorElements.add(validatorElement);
         return this;
     }
@@ -187,35 +187,35 @@ public final class Verifier {
 
     public Verifier gtThan(long value, long expectVal, String name) {
         ValidatorElement validatorElement = new ValidatorElement(new Object[]{value, expectVal}, name,
-                new NumberValidator(NumberValidator.GT));
+                new NumberValidator(NumberValidator.GT[0]));
         validatorElements.add(validatorElement);
         return this;
     }
 
     public Verifier gtEq(long value, long expectVal, String name) {
         ValidatorElement validatorElement = new ValidatorElement(new Object[]{value, expectVal}, name,
-                new NumberValidator(NumberValidator.GT_EQ));
+                new NumberValidator(NumberValidator.GT_EQ[0]));
         validatorElements.add(validatorElement);
         return this;
     }
 
     public Verifier ltThan(long value, long expectVal, String name) {
         ValidatorElement validatorElement = new ValidatorElement(new Object[]{value, expectVal}, name,
-                new NumberValidator(NumberValidator.LT));
+                new NumberValidator(NumberValidator.LT[0]));
         validatorElements.add(validatorElement);
         return this;
     }
 
     public Verifier ltEq(long value, long expectVal, String name) {
         ValidatorElement validatorElement = new ValidatorElement(new Object[]{value, expectVal}, name,
-                new NumberValidator(NumberValidator.LT_EQ));
+                new NumberValidator(NumberValidator.LT_EQ[0]));
         validatorElements.add(validatorElement);
         return this;
     }
 
     public Verifier mustEq(long value, long expectVal, String name) {
         ValidatorElement validatorElement = new ValidatorElement(new Object[]{value, expectVal}, name,
-                new NumberValidator(NumberValidator.EQ));
+                new NumberValidator(NumberValidator.EQ[0]));
         validatorElements.add(validatorElement);
         return this;
     }

@@ -12,6 +12,8 @@ package com.sonsure.commons.validation;
 import com.sonsure.commons.exception.ValidationException;
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.MessageFormat;
+
 /**
  * @author liyd
  * @date 17/2/13
@@ -26,13 +28,13 @@ public class StringValidator implements Validator {
 
     public static final String[] MUST_EQ_IGNORE_CASE = {PREFIX + "must.eq.ignore.case", "必须相同"};
 
-    public static final String[] NOT_EQ = {PREFIX + "not.eq", "不能等于{0}"};
+    public static final String[] NOT_EQ = {PREFIX + "not.eq", "{0}不能等于{1}"};
 
-    public static final String[] MIN_LENGTH = {PREFIX + "min.length", "允许最小长度为{0}"};
+    public static final String[] MIN_LENGTH = {PREFIX + "min.length", "{0}允许最小长度为{1}"};
 
-    public static final String[] MAX_LENGTH = {PREFIX + "max.length", "允许最大长度为{0}"};
+    public static final String[] MAX_LENGTH = {PREFIX + "max.length", "{0}允许最大长度为{1}"};
 
-    public static final String[] EQ_LENGTH = {PREFIX + "eq.length", "长度必须为{0}"};
+    public static final String[] EQ_LENGTH = {PREFIX + "eq.length", "{0}长度必须为{1}"};
 
 
     private final String type;
@@ -71,25 +73,25 @@ public class StringValidator implements Validator {
             Object[] values = (Object[]) value;
             validatorResult.setSuccess(StringUtils.length((String) values[0]) >= (Integer) values[1]);
             validatorResult.setCode(MIN_LENGTH[0]);
-            validatorResult.setMessage(validateName + MIN_LENGTH[1]);
+            validatorResult.setMessage(MessageFormat.format(MIN_LENGTH[1], validateName, values[1]));
             return validatorResult;
         } else if (StringUtils.equals(type, MAX_LENGTH[0])) {
             Object[] values = (Object[]) value;
             validatorResult.setSuccess(StringUtils.length((String) values[0]) <= (Integer) values[1]);
             validatorResult.setCode(MAX_LENGTH[0]);
-            validatorResult.setMessage(validateName + MAX_LENGTH[1]);
+            validatorResult.setMessage(MessageFormat.format(MAX_LENGTH[1], validateName, values[1]));
             return validatorResult;
         } else if (StringUtils.equals(type, EQ_LENGTH[0])) {
             Object[] values = (Object[]) value;
             validatorResult.setSuccess(StringUtils.length((String) values[0]) == (Integer) values[1]);
             validatorResult.setCode(EQ_LENGTH[0]);
-            validatorResult.setMessage(validateName + EQ_LENGTH[1]);
+            validatorResult.setMessage(MessageFormat.format(EQ_LENGTH[1], validateName, values[1]));
             return validatorResult;
         } else if (StringUtils.equals(type, NOT_EQ[0])) {
             Object[] values = (Object[]) value;
             validatorResult.setSuccess(!StringUtils.equals((String) values[0], (String) values[1]));
             validatorResult.setCode(NOT_EQ[0]);
-            validatorResult.setMessage(validateName + NOT_EQ[1]);
+            validatorResult.setMessage(MessageFormat.format(NOT_EQ[1], validateName, values[1]));
             return validatorResult;
         } else {
             throw new ValidationException("不支持的校验");

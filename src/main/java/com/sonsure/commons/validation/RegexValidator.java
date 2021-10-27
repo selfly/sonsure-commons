@@ -9,24 +9,22 @@
 
 package com.sonsure.commons.validation;
 
+import java.text.MessageFormat;
+
 /**
- * Created by liyd on 17/1/24.
+ * @author liyd
+ * @date 17/1/24
  */
 public class RegexValidator implements Validator {
 
+    private static final String[] REGEX = {PREFIX + "regex.error", "{0}格式不正确"};
+
     @Override
-    public boolean validate(Object value) {
+    public ValidatorResult validate(Object value, String validateName) {
         String[] values = (String[]) value;
-        return values[0].matches(values[1]);
-    }
-
-    @Override
-    public String validateCode() {
-        return "regex.error";
-    }
-
-    @Override
-    public String validateMsg(Object value, String validateName) {
-        return validateName + "格式不正确";
+        ValidatorResult result = new ValidatorResult(values[0].matches(values[1]));
+        result.setCode(REGEX[0]);
+        result.setMessage(MessageFormat.format(REGEX[1], validateName));
+        return result;
     }
 }
